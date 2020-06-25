@@ -12,4 +12,5 @@ https://youtu.be/JQiS0Hw6K9Y
 
 This script simply use the "An HTML to Markdown converter written in JavaScript" script, writen by **Dom Christie**
 
-[https://github.com/domchristie](https://github.com/domchristie)
+* turndown Project page: [https://github.com/domchristie/turndown](https://github.com/domchristie/turndown)
+* Dom page: [https://github.com/domchristie](https://github.com/domchristie)
