@@ -2,7 +2,7 @@
 // @name         RonenAriely QnA SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.2
+// @version      1.3
 // @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/index.html
@@ -57,7 +57,7 @@ function RonenArielyOnLoad () {
         RonenArielyCleanPage ();
     });
 
-    // Adding sub-content
+    // Adding the buttom to show the sub-content
     var RonenArielySubContentButton = document.createElement("button");
     RonenArielySubContentButton.innerHTML = "Show/Hide OP Message";
     RonenArielyDiv.appendChild(RonenArielySubContentButton);
@@ -115,6 +115,7 @@ function MyaddEventListener (_ThreadContent, _ThreadID, _URL){
         });
 }
 
+// Loading the external page
 function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
     //alert("ThreadNum: " + _ThreadContent + "; URL: " + _URL + "; ThreadID: " + _ThreadID);
 
@@ -129,8 +130,6 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
     ShowHidContentButton.innerHTML = "❎";
     document.getElementsByClassName("col-xs-1 col-sm-2 col-md-1 icon-wrapper")[_ThreadContent].appendChild(ShowHidContentButton);
     ShowHidContentButton.addEventListener ("click", function() {ShowHidContent("ContentDiv_" + _ThreadContent, "ShowHidContentButton_" + _ThreadID);});
-    // ✅
-
 
 
     var MyDiv = document.createElement("div");
@@ -170,13 +169,89 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
 
             var parser = new DOMParser();
             var htmlDoc = parser.parseFromString(MyXML, 'text/html');
+            var content;
+            var ChildComments;
+
+
+//             // Show all comment
+//             content = htmlDoc.getElementsByClassName("comments-container");
+//             for (ChildComments = 0; ChildComments < content.length; ChildComments++) {
+//                 content[ChildComments].style.display = "block";
+//             }
+//             // Clean code
+//             content = htmlDoc.getElementsByClassName("control-bar");
+//             for (var b = 0; b < content.length; b++) {
+//                 content[b].remove();
+//                 // document.getElementsByClassName("comment-info")[1].remove();
+//             }
+
 
             //var content = htmlDoc.getElementsByClassName("widget widget-nopad smallmargin")[0].innerHTML;
             //var content = htmlDoc.getElementsByClassName("span8 mainContent")[0].innerHTML;
-            var content = htmlDoc.getElementsByClassName("question-body post-body")[0].innerHTML;
-            //alert(content);
 
+            // Content of the OP question:
+            content = htmlDoc.getElementsByClassName("question-body post-body")[0].innerHTML;
+            //alert(content);
             MyDiv1.innerHTML = content;
+
+            // Adding comment of the main question:
+            content = htmlDoc.getElementById("comments-container-" + _ThreadID);
+            //alert(content.innerHTML); // ok
+
+//             // find all first level child messages of the "content"
+//             var notes = null;
+//             for (var contentChildID = 0; contentChildID < content.childNodes.length; contentChildID++) {
+//                 if (content.childNodes[contentChildID].className == "4") {
+//                     notes = doc.childNodes[i];
+//                     break;
+//                 }
+//             }
+
+        //   //find the ID of the futher of the current comment container
+        //   ChildComments = content.getElementsByClassName("comment nsc");
+        //   for (var Com = 0; Com < ChildComments.length; Com++) {
+        //       alert(content.getElementsByClassName("comment nsc")[Com].getAttribute("nodeId"));
+        //   }
+
+            //MyDiv1.innerHTML += "<hr />" + content.innerHTML;
+            MyDiv1.innerHTML += "<hr style='clear: both;' /><div style = 'width:70px; float:left;'>&nbsp;&nbsp;&nbsp;</div><div style = 'width: calc(100% - 70px); float:left;'>" + content.outerHTML + "</div>";
+            //MyDiv1.append(content);
+
+
+            // Adding answers
+            content = htmlDoc.getElementsByClassName("post-container answer-container");
+            for (var a = 0; a < content.length; a++) {
+
+                MyDiv1.innerHTML += "<hr style='clear: both;' />" + content[a].innerHTML;
+            }
+
+
+
+            // This function not working on the important content
+            // therefore, Code is not formatted
+            //FromChild ();
+
+
+            /************************************************* CLEAN PAGE *******************/
+            setTimeout(function() {}, 3000);
+            // Show all comment
+            content = document.getElementsByClassName("comments-container");
+            for (ChildComments = 0; ChildComments < content.length; ChildComments++) {
+                content[ChildComments].style.display = "block";
+            }
+            // Clean code
+            content = document.getElementsByClassName("control-bar");
+            for (var b = 0; b < content.length; b++) {
+                content[b].remove();
+            }
+            content = document.getElementsByClassName("comment-info");
+            for (var c = 0; c < content.length; c++) {
+                content[c].remove();
+            }
+            content = document.getElementsByClassName("comment-info");
+            for (var d = 0; d < content.length; d++) {
+                content[d].remove();
+            }
         }
     });
 
@@ -194,6 +269,31 @@ function ShowHidContent(_ShowHidContentButton, _ContentButton){
 }
 
 
+// // This function not working on the important content
+// // therefore, Code is not formatted
+// function FromChild () {
 
+//     //Pretty print code blocks, some of them might be escaped, we need to unescape in order to pretty print them.
+//     //TODO: Find a better place to this code.
+//     var evaluateLineNum = function() {
+//       let $codeBlocks = $(".answer-body, .node-body, .question-body, .reply-body, .comment-text, .wmd-previewer");
+//       $.each($codeBlocks, function(indexI, elementI) {
+//           $.each($(elementI).find('pre'), function(indexJ, elementJ) {
+//               $(elementJ).addClass("prettyprint").addClass("linenums");
 
+//               if(!pageContext.currentEditor.enableLineNum) {
+//                 $(elementJ).addClass('no-num');
+//               }
+
+//               if($(elementI).attr('data-markup-language') === 'wmd') {
+//                   $(elementJ).text(commandUtils.unescapeHtml($(elementJ).text()));
+//               }
+//           });
+//       });
+//     }
+
+//     evaluateLineNum();
+//     prettyPrint();
+
+// }
 
