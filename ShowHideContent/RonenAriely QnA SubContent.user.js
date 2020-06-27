@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         RonenAriely QnA SubContent
+// @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
 // @version      1.4
