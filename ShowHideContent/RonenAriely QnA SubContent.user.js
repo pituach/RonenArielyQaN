@@ -2,11 +2,10 @@
 // @name         RonenAriely QnA SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.3
+// @version      1.4
 // @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
 // @author       Ronen Ariely
-// @match        https://docs.microsoft.com/en-us/answers/index.html
-// @match        https://docs.microsoft.com/en-us/answers/index.html?*
+// @match        https://docs.microsoft.com/en-us/answers/*
 // @grant        GM_addStyle
 // @grant        GM.xmlHttpRequest
 //
@@ -14,7 +13,7 @@
 // ==/UserScript==
 
 /************** Edit this section as you like ********/
-//
+//1.4 : adding support for feedback and not just for questions
 //
 //
 
@@ -51,7 +50,8 @@ function RonenArielyOnLoad () {
 
     // Adding the new cleaning Button
     var RonenArielyCleanPageButton = document.createElement("button");
-    RonenArielyCleanPageButton.innerHTML = "Clean Page";
+    RonenArielyCleanPageButton.setAttribute("id", "Page_Structure");
+    RonenArielyCleanPageButton.innerHTML = "Change Page Structure";
     RonenArielyDiv.appendChild(RonenArielyCleanPageButton);
     RonenArielyCleanPageButton.addEventListener ("click", function() {
         RonenArielyCleanPage ();
@@ -59,7 +59,8 @@ function RonenArielyOnLoad () {
 
     // Adding the buttom to show the sub-content
     var RonenArielySubContentButton = document.createElement("button");
-    RonenArielySubContentButton.innerHTML = "Show/Hide OP Message";
+    RonenArielySubContentButton.setAttribute("id", "Add_Show_Hide");
+    RonenArielySubContentButton.innerHTML = "Add Buttons to Show/Hide content";
     RonenArielyDiv.appendChild(RonenArielySubContentButton);
     RonenArielySubContentButton.addEventListener ("click", function() {
         RonenArielySubContent ();
@@ -73,20 +74,40 @@ function RonenArielyCleanPage () {
     document.getElementsByClassName("span4 sidebarTwo")[0].remove()
     document.getElementsByClassName("span8 mainContent")[0].style.width = "100%";
     document.getElementsByClassName("sticky-posts-list")[0].style.padding = "2px";
+
+    document.getElementById("Page_Structure").disabled = true;
+    document.getElementById("Page_Structure").style.background = "gray";
+    document.getElementById("Page_Structure").innerHTML = "Disabled";
 }
 
 
 // OK
 function RonenArielySubContent () {
-    var MainThread = document.getElementsByClassName("node-list-item og-poster-list-item question-list-item");
+
+    document.getElementById("Add_Show_Hide").disabled = true;
+    document.getElementById("Add_Show_Hide").style.background = "gray";
+    document.getElementById("Add_Show_Hide").innerHTML = "Disabled";
+
+    var MainThread = document.getElementsByClassName("node-list-item og-poster-list-item");
     //alert(MainThread.length);
+    // node-list-item og-poster-list-item question-list-item
+    // node-list-item og-poster-list-item idea-list-item
 
     var ThreadID;
     var URL;
 
     for (var ThreadContent = 0; ThreadContent < MainThread.length; ThreadContent++) {
 
-        ThreadID = document.getElementsByClassName("node-list-item og-poster-list-item question-list-item")[ThreadContent].children[2].id.replace("counts-", "");
+
+        //ThreadID = document.getElementsByClassName("node-list-item og-poster-list-item question-list-item")[ThreadContent].children[2].id.replace("counts-", "");
+        //ThreadID = document.getElementsByClassName("node-list-item og-poster-list-item idea-list-item")[ThreadContent].children[2].id.replace("counts-", "");
+
+        // In the odea we have the nodeid in the main div. But in question this attribute is missing for some reason
+        ThreadID = MainThread[ThreadContent].getAttribute("nodeId");
+        if (typeof ThreadID === "undefined" | ThreadID === '' | ThreadID == null) {
+            ThreadID = MainThread[ThreadContent].children[2].id.replace("counts-", "");
+        }
+
         URL = document.getElementsByTagName("h2")[ThreadContent].getElementsByTagName("a")[0].href;
 
         //console.log("ThreadNum: " + ThreadContent + "; URL: " + URL + "; ThreadID: " + ThreadID);
@@ -153,7 +174,8 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
     MyDiv1.innerHTML = "Loading...";
     MyDiv.append(MyDiv1);
 
-    document.getElementsByClassName("node-list-item og-poster-list-item question-list-item")[_ThreadContent].after(MyDiv);
+    document.getElementsByClassName("node-list-item og-poster-list-item")[_ThreadContent].after(MyDiv);
+    //document.getElementsByClassName("node-list-item og-poster-list-item question-list-item")[_ThreadContent].after(MyDiv);
     //document.getElementsByClassName("node-list-item og-poster-list-item question-list-item")[_ThreadContent].append(MyDiv);
 
     var xdsfa = GM.xmlHttpRequest({
@@ -189,10 +211,22 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
             //var content = htmlDoc.getElementsByClassName("widget widget-nopad smallmargin")[0].innerHTML;
             //var content = htmlDoc.getElementsByClassName("span8 mainContent")[0].innerHTML;
 
+            // Content of the OP  or Idea:
+            content = htmlDoc.getElementsByClassName("post-body")[0].innerHTML;
+            //alert(content);
+            MyDiv1.innerHTML = content;
+
+            /*
+            // Content of the OP Idea:
+            content = htmlDoc.getElementsByClassName("idea-body node-body post-body")[0].innerHTML;
+            //alert(content);
+            MyDiv1.innerHTML = content;
+
             // Content of the OP question:
             content = htmlDoc.getElementsByClassName("question-body post-body")[0].innerHTML;
             //alert(content);
             MyDiv1.innerHTML = content;
+            */
 
             // Adding comment of the main question:
             content = htmlDoc.getElementById("comments-container-" + _ThreadID);
@@ -267,6 +301,8 @@ function ShowHidContent(_ShowHidContentButton, _ContentButton){
         document.getElementById(_ContentButton).innerHTML = '✅';
     }
 }
+
+
 
 
 // // This function not working on the important content
