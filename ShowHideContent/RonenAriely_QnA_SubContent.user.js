@@ -2,7 +2,7 @@
 // @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.4
+// @version      1.5
 // @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/*
@@ -32,6 +32,7 @@ GM_addStyle ( RonenAriely ( function () {/*!
 
 
 var $ = window.jQuery;
+var i;
 
 // alert('Hello, this page is using Ronen Ariely extentation. it is still in preview. hope you like it');
 
@@ -207,6 +208,11 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
 //                 // document.getElementsByClassName("comment-info")[1].remove();
 //             }
 
+            //vote-widget
+            content = htmlDoc.getElementsByClassName("vote-widget");
+            for (var vw = 0; vw < content.length; vw++) {
+                content[vw].remove();
+            }
 
             //var content = htmlDoc.getElementsByClassName("widget widget-nopad smallmargin")[0].innerHTML;
             //var content = htmlDoc.getElementsByClassName("span8 mainContent")[0].innerHTML;
@@ -254,9 +260,15 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
 
             // Adding answers
             content = htmlDoc.getElementsByClassName("post-container answer-container");
-            for (var a = 0; a < content.length; a++) {
+            for (i = 0; i < content.length; i++) {
 
-                MyDiv1.innerHTML += "<hr style='clear: both;' />" + content[a].innerHTML;
+                MyDiv1.innerHTML += "<hr style='clear: both;' />" + content[i].innerHTML;
+            }
+            // Adding responsed to idea
+            content = htmlDoc.getElementsByClassName("post-container reply-container");
+            for (i = 0; i < content.length; i++) {
+
+                MyDiv1.innerHTML += "<hr style='clear: both;' />" + content[i].innerHTML;
             }
 
 
@@ -332,4 +344,3 @@ function ShowHidContent(_ShowHidContentButton, _ContentButton){
 //     prettyPrint();
 
 // }
-
