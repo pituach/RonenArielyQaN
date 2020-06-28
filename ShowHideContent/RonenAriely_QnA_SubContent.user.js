@@ -2,7 +2,7 @@
 // @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.5
+// @version      1.6
 // @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/*
@@ -14,7 +14,7 @@
 
 /************** Edit this section as you like ********/
 //1.4 : adding support for feedback and not just for questions
-//
+//1.6 : fix bug
 //
 
 /************** History and future ******************
@@ -74,7 +74,10 @@ function RonenArielyCleanPage () {
     // before remove the categories we can create new navigation option
     document.getElementsByClassName("span4 sidebarTwo")[0].remove()
     document.getElementsByClassName("span8 mainContent")[0].style.width = "100%";
-    document.getElementsByClassName("sticky-posts-list")[0].style.padding = "2px";
+    var StickyPostsList = document.getElementsByClassName("sticky-posts-list")[0];
+    if (typeof StickyPostsList !== "undefined" && StickyPostsList !== '' && StickyPostsList != null) {
+        StickyPostsList.style.padding = "2px";
+    }
 
     document.getElementById("Page_Structure").disabled = true;
     document.getElementById("Page_Structure").style.background = "gray";
