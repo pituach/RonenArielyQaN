@@ -157,6 +157,7 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
     ShowHidContentButton.addEventListener ("click", function() {ShowHidContent("ContentDiv_" + _ThreadContent, "ShowHidContentButton_" + _ThreadID);});
 
 
+    /*********************************** Create the div for the content and add them to the page *******************/
     var MyDiv = document.createElement("div");
     MyDiv.setAttribute("id", "ContentDiv_" + _ThreadContent);
     MyDiv.style.width = "100%";
@@ -171,16 +172,20 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
 
     var MyDiv1 = document.createElement("div");
     MyDiv1.setAttribute("id", "ContentDiv1_" + _ThreadContent);
-    MyDiv1.style.border = "1px solid #0000FF";
-    MyDiv1.style.backgroundColor = "#CCCCCC";
+    MyDiv1.style.border = "1px solid #A0AAEE";
+    MyDiv1.style.backgroundColor = "#DDDDFF";
+//     MyDiv1.style.border = "1px solid rgb(129, 175, 245);";
+//     MyDiv1.style.backgroundColor = "rgb(244, 244, 255, 1);";
     MyDiv1.style.width = "calc(100% - 110px)";
     MyDiv1.style.float = "left";
     MyDiv1.innerHTML = "Loading...";
     MyDiv.append(MyDiv1);
 
     document.getElementsByClassName("node-list-item og-poster-list-item")[_ThreadContent].after(MyDiv);
-    //document.getElementsByClassName("node-list-item og-poster-list-item question-list-item")[_ThreadContent].after(MyDiv);
-    //document.getElementsByClassName("node-list-item og-poster-list-item question-list-item")[_ThreadContent].append(MyDiv);
+
+    /*********************************** Load External Page of the thread *******************/
+    // Note! If we will have a well formatted RSS then we should replace this part and load the RSS,
+    // instead of loading the full HTML+CSS+Scripos of the client page
 
     var xdsfa = GM.xmlHttpRequest({
         method: "GET",
@@ -189,6 +194,7 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
             "User-Agent": "Mozilla/5.0",
             "Accept": "text/html"
         },
+        /********************************************* Load finished and we can parse the conetnt */
         onload: function(response) {
             var MyXML = response.responseText;
             //alert(MyXML); // OK
@@ -198,112 +204,60 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
             var content;
             var ChildComments;
 
+            setTimeout(function() {}, 1000);
 
-//             // Show all comment
-//             content = htmlDoc.getElementsByClassName("comments-container");
-//             for (ChildComments = 0; ChildComments < content.length; ChildComments++) {
-//                 content[ChildComments].style.display = "block";
-//             }
-//             // Clean code
-//             content = htmlDoc.getElementsByClassName("control-bar");
-//             for (var b = 0; b < content.length; b++) {
-//                 content[b].remove();
-//                 // document.getElementsByClassName("comment-info")[1].remove();
-//             }
-
-            //vote-widget
-            content = htmlDoc.getElementsByClassName("vote-widget");
-            for (var vw = 0; vw < content.length; vw++) {
-                content[vw].remove();
+            /************************************************* CLEAN PAGE *******************/
+            // Show all comment
+            for (i = 0; i < htmlDoc.getElementsByClassName("comments-container").length; i++) {
+                htmlDoc.getElementsByClassName("comments-container")[i].style.display = "block";
             }
 
-            //var content = htmlDoc.getElementsByClassName("widget widget-nopad smallmargin")[0].innerHTML;
-            //var content = htmlDoc.getElementsByClassName("span8 mainContent")[0].innerHTML;
+            // Clean code
+            i = htmlDoc.getElementsByClassName("control-bar").length;
+            while (i--) {
+                htmlDoc.getElementsByClassName("control-bar")[i].remove();
+            }
+            i = htmlDoc.getElementsByClassName("comment-info").length;
+            while (i--) {
+                htmlDoc.getElementsByClassName("comment-info")[i].remove();
+            }
+            i = htmlDoc.getElementsByClassName("vote-widget").length;
+            while (i--) {
+                htmlDoc.getElementsByClassName("vote-widget")[i].remove();
+            }
+            i = htmlDoc.getElementsByTagName('script').length;
+            while (i--) {
+                htmlDoc.getElementsByTagName('script')[i].remove();
+            }
+            i = htmlDoc.getElementsByClassName("post-tools").length;
+            while (i--) {
+                htmlDoc.getElementsByClassName("post-tools")[i].remove();
+            }
 
-            // Content of the OP  or Idea:
+            /*************************** Adding the content of the original Question or Idea *****************  */
+            // Content of the Question or Idea:
             content = htmlDoc.getElementsByClassName("post-body")[0].innerHTML;
             //alert(content);
             MyDiv1.innerHTML = content;
 
-            /*
-            // Content of the OP Idea:
-            content = htmlDoc.getElementsByClassName("idea-body node-body post-body")[0].innerHTML;
-            //alert(content);
-            MyDiv1.innerHTML = content;
-
-            // Content of the OP question:
-            content = htmlDoc.getElementsByClassName("question-body post-body")[0].innerHTML;
-            //alert(content);
-            MyDiv1.innerHTML = content;
-            */
-
-            // Adding comment of the main question:
+            /*************************** Adding the comments of the main Question or Idea *****************  */
             content = htmlDoc.getElementById("comments-container-" + _ThreadID);
             //alert(content.innerHTML); // ok
-
-//             // find all first level child messages of the "content"
-//             var notes = null;
-//             for (var contentChildID = 0; contentChildID < content.childNodes.length; contentChildID++) {
-//                 if (content.childNodes[contentChildID].className == "4") {
-//                     notes = doc.childNodes[i];
-//                     break;
-//                 }
-//             }
-
-        //   //find the ID of the futher of the current comment container
-        //   ChildComments = content.getElementsByClassName("comment nsc");
-        //   for (var Com = 0; Com < ChildComments.length; Com++) {
-        //       alert(content.getElementsByClassName("comment nsc")[Com].getAttribute("nodeId"));
-        //   }
-
-            //MyDiv1.innerHTML += "<hr />" + content.innerHTML;
             MyDiv1.innerHTML += "<hr style='clear: both;' /><div style = 'width:70px; float:left;'>&nbsp;&nbsp;&nbsp;</div><div style = 'width: calc(100% - 70px); float:left;'>" + content.outerHTML + "</div>";
-            //MyDiv1.append(content);
 
-
-            // Adding answers
+            /*************************** Adding the answers to Question *****************  */
             content = htmlDoc.getElementsByClassName("post-container answer-container");
             for (i = 0; i < content.length; i++) {
-
                 MyDiv1.innerHTML += "<hr style='clear: both;' />" + content[i].innerHTML;
             }
-            // Adding responsed to idea
+
+            /*************************** Adding the Responds to Idea *****************  */
             content = htmlDoc.getElementsByClassName("post-container reply-container");
             for (i = 0; i < content.length; i++) {
-
                 MyDiv1.innerHTML += "<hr style='clear: both;' />" + content[i].innerHTML;
-            }
-
-
-
-            // This function not working on the important content
-            // therefore, Code is not formatted
-            //FromChild ();
-
-
-            /************************************************* CLEAN PAGE *******************/
-            setTimeout(function() {}, 3000);
-            // Show all comment
-            content = document.getElementsByClassName("comments-container");
-            for (ChildComments = 0; ChildComments < content.length; ChildComments++) {
-                content[ChildComments].style.display = "block";
-            }
-            // Clean code
-            content = document.getElementsByClassName("control-bar");
-            for (var b = 0; b < content.length; b++) {
-                content[b].remove();
-            }
-            content = document.getElementsByClassName("comment-info");
-            for (var c = 0; c < content.length; c++) {
-                content[c].remove();
-            }
-            content = document.getElementsByClassName("comment-info");
-            for (var d = 0; d < content.length; d++) {
-                content[d].remove();
             }
         }
     });
-
 }
 
 function ShowHidContent(_ShowHidContentButton, _ContentButton){
