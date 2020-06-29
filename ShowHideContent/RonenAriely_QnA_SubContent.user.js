@@ -2,7 +2,7 @@
 // @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.6
+// @version      1.7
 // @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/*
@@ -15,7 +15,8 @@
 /************** Edit this section as you like ********/
 //1.4 : adding support for feedback and not just for questions
 //1.6 : fix bug
-//
+//1.7 : add option to select tag/category (forum) using drop down list (I added 100 forums to the list out of about 300.
+//      More work is needed to add all the tags and splut them into groups
 
 /************** History and future ******************
 2020-06-15 : first version is up
@@ -69,10 +70,103 @@ function RonenArielyOnLoad () {
 
 }
 
+function link_to(forum){
+    // https://docs.microsoft.com/en-us/answers/topics/azure-migrate.html
+    if (forum.selectedIndex != 0) top.location.href = "https://docs.microsoft.com/en-us/answers/topics/" + forum.options[forum.selectedIndex].value + ".html";return 1;
+}
+
 // OK
 function RonenArielyCleanPage () {
-    // before remove the categories we can create new navigation option
+
+    // Remove the category list
     document.getElementsByClassName("span4 sidebarTwo")[0].remove()
+
+
+    /************************************************** Add dropdown menu *****/
+    var ListOfForums, MyGroup, ListOfForumsArray
+    ListOfForums = document.createElement("select");
+    ListOfForums.setAttribute("id", "RonenArielyListOfForums");
+    ListOfForums.style.backgroundColor = "#0066CC";
+    ListOfForums.style.borderRight  = "#cdc8c5 1px outset;";
+    ListOfForums.style.borderTop    = "#cdc8c5 1px outset;";
+    ListOfForums.style.borderLeft   = "#cdc8c5 1px outset";
+    ListOfForums.style.borderBottom = "#cdc8c5 1px outset;";
+    ListOfForums.style.color = "#ffffff;";
+
+    ListOfForums.addEventListener ("change", function() {link_to(this)});
+
+
+    let NewOption = document.createElement("option");
+    NewOption.text = "Select forum";
+    NewOption.disabled = true;
+    NewOption.selected = true;
+    ListOfForums.add(NewOption);
+
+    //------------------------------------------------------- Data Platform
+    MyGroup = document.createElement("optgroup");
+    MyGroup.label = "Data Platform";
+    ListOfForums.add(MyGroup);
+    ListOfForumsArray = [
+        "azure-database-migration","azure-sql-database","azure-sql-virtual-machines","azure-synapse-analytics","azure-virtual-machines"
+        ,"azure-data-factory"
+    ]
+    for(i = 0; i < ListOfForumsArray.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = ListOfForumsArray[i];
+        NewOption.value = ListOfForumsArray[i];
+        ListOfForums.add(NewOption);
+    }
+
+    //------------------------------------------------------- Office
+    MyGroup = document.createElement("optgroup");
+    MyGroup.label = "Office";
+    ListOfForums.add(MyGroup);
+    ListOfForumsArray = ["teams", "teams-linux"]
+    for(i = 0; i < ListOfForumsArray.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = ListOfForumsArray[i];
+        NewOption.value = ListOfForumsArray[i];
+        ListOfForums.add(NewOption);
+    }
+
+    //------------------------------------------------------- Virtual Machines
+    MyGroup = document.createElement("optgroup");
+    MyGroup.label = "Virtual Machines";
+    ListOfForums.add(MyGroup);
+    ListOfForumsArray = ["azure-sql-virtual-machines","windows-10-setup"]
+    for(i = 0; i < ListOfForumsArray.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = ListOfForumsArray[i];
+        NewOption.value = ListOfForumsArray[i];
+        ListOfForums.add(NewOption);
+    }
+
+    //------------------------------------------------------- More....
+    MyGroup = document.createElement("optgroup");
+    MyGroup.label = "More...";
+    ListOfForums.add(MyGroup);
+
+    // I got the category manually by executing:
+       // var ListOfForums = document.getElementsByClassName("tag");
+       // for(var i = 0; i < ListOfForums.length; i++){MyAll = MyAll + (ListOfForums[i].href.toString().replace('https://docs.microsoft.com/answers/topics/','\"').replace('.html','\",'))}
+    ListOfForumsArray = ["azure-active-directory","azure-ad-app-development","azure-ad-app-management","azure-ad-audit-logs","azure-ad-authentication-protocols","azure-ad-b2c","azure-ad-connect","azure-ad-device-management","azure-ad-fs","azure-ad-group-management","azure-ad-identity-governance","azure-ad-licensing","azure-ad-multi-factor-authentication","azure-ad-password-protection","azure-ad-privileged-identity-management","azure-ad-sign-in-logs","azure-ad-sspr","azure-ad-user-management","azure-analysis-services","azure-api-fhir","azure-app-configuration","azure-arc","azure-automation","azure-backup","azure-batch","azure-bing-custom","azure-bing-image","azure-bing-spellcheck","azure-bing-visual","azure-blob-storage","azure-blockchain-workbench","azure-bot-service","azure-cdn","azure-cloud-services","azure-cognitive-services","azure-container-instances","azure-content-moderator","azure-cost-management","azure-cyclecloud","azure-database-migration","azure-database-postgresql","azure-databricks","azure-data-explorer","azure-data-lake-analytics","azure-data-science-vm","azure-ddos-protection","azure-dedicated-hsm","azure-dev-tool-integrations","azure-disk-encryption","azure-dns","azure-ad-access-reviews","azure-ad-app-registration","azure-ad-b2b","azure-ad-connect-health","azure-ad-graph","azure-ad-libraries","azure-ad-pass-through-authentication","azure-ad-rbac","azure-ad-tenant","azure-anomaly-detector","azure-application-gateway","azure-avere-vfxt","azure-bing-autosuggest","azure-bing-news","azure-bing-web","azure-blueprints","azure-classroom-labs","azure-computer-vision","azure-cosmos-db","azure-database-mariadb","azure-data-box-family","azure-data-factory","azure-data-share","azure-devtestlabs","azure-disk-storage","azure-ad-application-proxy","azure-ad-conditional-access","azure-ad-hybrid-identity","azure-ad-powershell","azure-ad-user-provisioning","azure-archive-storage","azure-bing-entity","azure-blockchain-service","azure-cognitive-search","azure-custom-vision","azure-data-catalog","azure-dedicated-host","adfs","azure-ad-domain-services","azure-ad-single-sign-on","azure-bastion","azure-cache-redis","azure-database-mysql","azure-digital-twins","azure-ad-microsoft-account","azure-bing-video","azure-data-lake-storage","azure-api-management","azure-ad-authentication","azure-container-registry"];
+    for(i = 0; i < ListOfForumsArray.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = ListOfForumsArray[i];
+        NewOption.value = ListOfForumsArray[i];
+        ListOfForums.add(NewOption);
+    }
+
+
+    document.getElementById("RonenArielyDiv").append(ListOfForums);
+    /************************************************** Add dropdown menu *****/
+
+
+
+
+
+
+
     document.getElementsByClassName("span8 mainContent")[0].style.width = "100%";
     var StickyPostsList = document.getElementsByClassName("sticky-posts-list")[0];
     if (typeof StickyPostsList !== "undefined" && StickyPostsList !== '' && StickyPostsList != null) {
