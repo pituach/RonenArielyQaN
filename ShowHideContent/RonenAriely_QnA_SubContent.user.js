@@ -2,24 +2,33 @@
 // @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.7
+// @version      1.8
 // @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/*
+// @include
+// @exclude
+// @resource     RonenArielyicon https://github.com/pituach/RonenArielyQaN/raw/master/RonenArielyKey.gif
 // @grant        GM_addStyle
 // @grant        GM.xmlHttpRequest
+// @grant        GM.getResourceUrl
 //
-// @resource icon1 ariely.info\ariely.info/favicon.ico
 // ==/UserScript==
 
 /************** Edit this section as you like ********/
-//1.4 : adding support for feedback and not just for questions
-//1.6 : fix bug
-//1.7 : add option to select tag/category (forum) using drop down list (I added 100 forums to the list out of about 300.
-//      More work is needed to add all the tags and splut them into groups
+//
+
+
+/************** tampermonkey Learning Tips ********/
+// @match vs @include: Regular Expressions can be used only with @include
+//
 
 /************** History and future ******************
-2020-06-15 : first version is up
+// 1.4 : adding support for feedback and not just for questions
+// 1.6 : fix bug
+// 1.7 : add option to select tag/category (forum) using drop down list (I added 100 forums to the list out of about 300.
+//       More work is needed to add all the tags and splut them into groups
+// 1.8 : (1) Moving the Ronen Ariely Scripts location and remove my name
 
 ****************************************************/
 
@@ -43,31 +52,79 @@ function RonenAriely (zEvent) {
 
 function RonenArielyOnLoad () {
 
+    /*------------------------------------------------------- Adding the buttons scripts in new div RonenArielyDiv */
+    document.getElementsByClassName("nav-bar")[1].style.lineHeight = "54px"; // This will put the content in the middle, It fit the high of the .nav-bar class
+
     var RonenArielyDiv = document.createElement("div");
     RonenArielyDiv.setAttribute("id", "RonenArielyDiv");
-    RonenArielyDiv.style.border = "1px solid #0000FF";
-    RonenArielyDiv.innerHTML = "Ronen Ariely Scripts: "
-    var MainNavbar = document.getElementById("main-navbar");
-    MainNavbar.appendChild(RonenArielyDiv);
+    //RonenArielyDiv.style.border = "1px solid #0000FF";
+    //RonenArielyDiv.style.padding = "1px";
+    //RonenArielyDiv.style.backgroundColor = "#ccffff";
+    //RonenArielyDiv.innerHTML = "Ronen Ariely Scripts: "
+    //RonenArielyDiv.style.display = "contents";
+    //document.getElementsByClassName("nav-bar is-content")[0].getElementsByClassName("nav-bar-spacer")[0].appendChild(RonenArielyDiv);
+    //RonenArielyDiv.style.float = "left";
+    RonenArielyDiv.style.display = "inline";
+    //RonenArielyDiv.style.margin = "10px";
+    RonenArielyDiv.style.float = "right";
+    document.getElementsByClassName("has-padding-none has-flex-grow")[0].style.float = "left";
+    document.getElementsByClassName("has-padding-none has-flex-grow")[0].style.margin = "3px";
+    document.getElementsByClassName("has-padding-none has-flex-grow")[0].after(RonenArielyDiv);
 
-    // Adding the new cleaning Button
+    /************************************************************************** Adding the content to RonenArielyDiv */
+
+    /*------------------------------------------------------- Add linkl to Ronen Ariely site (credit on script, please do not remove this)*/
+
+    var RonenArielyiconS = document.createElement("span");
+    RonenArielyiconS.style.border = "2px solid #0066CC";
+    RonenArielyiconS.style.padding = "0px 4px 4px 3px";
+
+    var RonenArielyiconA = document.createElement("a");
+    RonenArielyiconA.setAttribute("id", "RonenArielySite");
+    RonenArielyiconA.title = "Ronen Ariely Site";
+    RonenArielyiconA.href = "http://ariely.info/";
+    RonenArielyiconA.target = "_blank";
+    RonenArielyiconA.style.marginRight = "2px";
+    RonenArielyiconA.style.marginLeft = "2px";
+    //RonenArielyiconA.style.display = "flex";
+
+    RonenArielyDiv.appendChild(RonenArielyiconS);
+    RonenArielyiconS.appendChild(RonenArielyiconA);
+    (async function() {
+        //let img = document.createElement("img");
+        //img.src = await GM.getResourceUrl("RonenArielyicon");
+        var RonenArielyiconImg = document.createElement("img");
+        RonenArielyiconImg.src = await GM.getResourceUrl("RonenArielyicon");
+        RonenArielyiconA.appendChild(RonenArielyiconImg);
+    })();
+
+    /*------------------------------------------------------- Adding the new cleaning Button */
     var RonenArielyCleanPageButton = document.createElement("button");
     RonenArielyCleanPageButton.setAttribute("id", "Page_Structure");
     RonenArielyCleanPageButton.innerHTML = "Change Page Structure";
-    RonenArielyDiv.appendChild(RonenArielyCleanPageButton);
+    RonenArielyCleanPageButton.style.backgroundColor = "#0066CC";
+    RonenArielyCleanPageButton.style.color = "#ffffff";
     RonenArielyCleanPageButton.addEventListener ("click", function() {
         RonenArielyCleanPage ();
     });
+    RonenArielyCleanPageButton.style.marginRight = "5px";
+    RonenArielyCleanPageButton.style.marginLeft = "5px";
+    RonenArielyDiv.appendChild(RonenArielyCleanPageButton);
 
-    // Adding the buttom to show the sub-content
+    /*------------------------------------------------------- Adding the buttom to show the sub-content */
     var RonenArielySubContentButton = document.createElement("button");
     RonenArielySubContentButton.setAttribute("id", "Add_Show_Hide");
     RonenArielySubContentButton.innerHTML = "Add Buttons to Show/Hide content";
-    RonenArielyDiv.appendChild(RonenArielySubContentButton);
+    RonenArielySubContentButton.style.backgroundColor = "#0066CC";
+    RonenArielySubContentButton.style.color = "#ffffff";
     RonenArielySubContentButton.addEventListener ("click", function() {
         RonenArielySubContent ();
     });
+    RonenArielySubContentButton.style.marginRight = "5px";
+    RonenArielySubContentButton.style.marginLeft = "5px";
+    RonenArielyDiv.appendChild(RonenArielySubContentButton);
 
+    /*-------------------------------------------------------  */
 }
 
 function link_to(forum){
@@ -75,26 +132,48 @@ function link_to(forum){
     if (forum.selectedIndex != 0) top.location.href = "https://docs.microsoft.com/en-us/answers/topics/" + forum.options[forum.selectedIndex].value + ".html";return 1;
 }
 
-// OK
 function RonenArielyCleanPage () {
 
-    // Remove the category list
+    /**************************************************************************  */
+    /*
+    // All the page DOM is very complex instead simple structure
+    // There is not need for the spaces on the left/right
+    // The code based on CSS At-rules like @media
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
+    // Control @Media in JS: https://www.w3schools.com/howto/howto_js_media_queries.asp
+
+    document.getElementsByClassName("nav-bar")[0].style.paddingLeft = "1rem";
+    document.getElementsByClassName("nav-bar")[0].style.paddingRight = "1rem";
+    document.getElementsByClassName("nav-bar")[1].style.paddingLeft = "1rem";
+    document.getElementsByClassName("nav-bar")[1].style.paddingRight = "1rem";
+    document.getElementsByClassName("container")[0].style.marginLeft = "1rem";
+    document.getElementsByClassName("container")[1].style.marginLeft = "1rem";
+    document.getElementsByClassName("container")[2].style.marginLeft = "1rem";
+    document.getElementsByClassName("container")[0].style.marginRight = "1rem";
+    document.getElementsByClassName("container")[1].style.marginRight = "1rem";
+    document.getElementsByClassName("container")[2].style.marginRight = "1rem";
+    document.getElementsByClassName("content-header uhf-container has-padding has-default-focus")[0].style.paddingLeft = "1rem";
+    document.getElementsByClassName("content-header uhf-container has-padding has-default-focus")[0].style.paddingRight = "1rem";
+    */
+
+    /************************************************** Remove the category list on the right */
     document.getElementsByClassName("span4 sidebarTwo")[0].remove()
 
-
-    /************************************************** Add dropdown menu *****/
+    /************************************************** Add dropdown menu */
     var ListOfForums, MyGroup, ListOfForumsArray
     ListOfForums = document.createElement("select");
     ListOfForums.setAttribute("id", "RonenArielyListOfForums");
     ListOfForums.style.backgroundColor = "#0066CC";
-    ListOfForums.style.borderRight  = "#cdc8c5 1px outset;";
-    ListOfForums.style.borderTop    = "#cdc8c5 1px outset;";
-    ListOfForums.style.borderLeft   = "#cdc8c5 1px outset";
+    ListOfForums.style.borderRight = "#cdc8c5 1px outset;";
+    ListOfForums.style.borderTop = "#cdc8c5 1px outset;";
+    ListOfForums.style.borderLeft = "#cdc8c5 1px outset";
     ListOfForums.style.borderBottom = "#cdc8c5 1px outset;";
-    ListOfForums.style.color = "#ffffff;";
+    // color not working, so I will add it at the end
+    //ListOfForums.style.color = "white;";
 
-    ListOfForums.addEventListener ("change", function() {link_to(this)});
-
+    ListOfForums.addEventListener ("change", function() {
+        link_to(this)
+    });
 
     let NewOption = document.createElement("option");
     NewOption.text = "Select forum";
@@ -157,25 +236,23 @@ function RonenArielyCleanPage () {
         ListOfForums.add(NewOption);
     }
 
+    //document.getElementById("RonenArielyDiv").append(ListOfForums);
+    document.getElementById("Page_Structure").after(ListOfForums);
+    document.getElementById("RonenArielyListOfForums").style.color = "#ffffff";
 
-    document.getElementById("RonenArielyDiv").append(ListOfForums);
-    /************************************************** Add dropdown menu *****/
-
-
-
-
-
-
-
+    /************************************************** chenge width to 100% *****/
     document.getElementsByClassName("span8 mainContent")[0].style.width = "100%";
     var StickyPostsList = document.getElementsByClassName("sticky-posts-list")[0];
     if (typeof StickyPostsList !== "undefined" && StickyPostsList !== '' && StickyPostsList != null) {
         StickyPostsList.style.padding = "2px";
     }
 
-    document.getElementById("Page_Structure").disabled = true;
-    document.getElementById("Page_Structure").style.background = "gray";
-    document.getElementById("Page_Structure").innerHTML = "Disabled";
+    /************************************************** Disable/remove cleaning button */
+    //document.getElementById("Page_Structure").disabled = true;
+    //document.getElementById("Page_Structure").style.background = "gray";
+    //document.getElementById("Page_Structure").innerHTML = "Disabled";
+    document.getElementById("Page_Structure").remove();
+
 }
 
 
