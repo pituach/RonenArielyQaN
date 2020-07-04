@@ -2,7 +2,7 @@
 // @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.8
+// @version      1.9
 // @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/*
@@ -29,6 +29,7 @@
 // 1.7 : add option to select tag/category (forum) using drop down list (I added 100 forums to the list out of about 300.
 //       More work is needed to add all the tags and splut them into groups
 // 1.8 : (1) Moving the Ronen Ariely Scripts location and remove my name
+// 1.9 : Adding option to store setting in cookies
 
 ****************************************************/
 
@@ -73,7 +74,7 @@ function RonenArielyOnLoad () {
 
     /************************************************************************** Adding the content to RonenArielyDiv */
 
-    /*------------------------------------------------------- Add linkl to Ronen Ariely site (credit on script, please do not remove this)*/
+    /*------------------------------------------------------- Add link to Ronen Ariely site (credit on script, please do not remove this)*/
 
     var RonenArielyiconS = document.createElement("span");
     RonenArielyiconS.style.border = "2px solid #0066CC";
@@ -98,6 +99,19 @@ function RonenArielyOnLoad () {
         RonenArielyiconA.appendChild(RonenArielyiconImg);
     })();
 
+    /*------------------------------------------------------- Add Setting */
+    var RonenArielySettingButton = document.createElement("button");
+    RonenArielySettingButton.setAttribute("id", "RonenArielySetting");
+    RonenArielySettingButton.innerHTML = "Setting";
+    RonenArielySettingButton.style.backgroundColor = "#0066CC";
+    RonenArielySettingButton.style.color = "#ffffff";
+    RonenArielySettingButton.addEventListener ("click", function() {
+        RonenArielySetting();
+    });
+    RonenArielySettingButton.style.marginRight = "5px";
+    RonenArielySettingButton.style.marginLeft = "5px";
+    RonenArielyDiv.appendChild(RonenArielySettingButton);
+
     /*------------------------------------------------------- Adding the new cleaning Button */
     var RonenArielyCleanPageButton = document.createElement("button");
     RonenArielyCleanPageButton.setAttribute("id", "Page_Structure");
@@ -114,7 +128,7 @@ function RonenArielyOnLoad () {
     /*------------------------------------------------------- Adding the buttom to show the sub-content */
     var RonenArielySubContentButton = document.createElement("button");
     RonenArielySubContentButton.setAttribute("id", "Add_Show_Hide");
-    RonenArielySubContentButton.innerHTML = "Add Buttons to Show/Hide content";
+    RonenArielySubContentButton.innerHTML = "Add Show/Hide content";
     RonenArielySubContentButton.style.backgroundColor = "#0066CC";
     RonenArielySubContentButton.style.color = "#ffffff";
     RonenArielySubContentButton.addEventListener ("click", function() {
@@ -125,11 +139,100 @@ function RonenArielyOnLoad () {
     RonenArielyDiv.appendChild(RonenArielySubContentButton);
 
     /*-------------------------------------------------------  */
+    if (document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput1='))) {
+        if((document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput1=')).split('=')[1]) == "true"){
+            RonenArielyCleanPage ();
+        }
+    }
+    if (document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2='))) {
+        if((document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2=')).split('=')[1]) == "true"){
+            RonenArielySubContent ();
+        }
+    }
 }
 
 function link_to(forum){
     // https://docs.microsoft.com/en-us/answers/topics/azure-migrate.html
     if (forum.selectedIndex != 0) top.location.href = "https://docs.microsoft.com/en-us/answers/topics/" + forum.options[forum.selectedIndex].value + ".html";return 1;
+}
+
+function RonenArielySetting () {
+
+    var RonenArielySettingDiv = document.createElement('div');
+    RonenArielySettingDiv.setAttribute("id", "RonenArielySettingDiv");
+    RonenArielySettingDiv.style.border = "2px solid #0066CC";
+    RonenArielySettingDiv.style.padding = "0px 4px 4px 3px";
+    RonenArielySettingDiv.style.position = 'absolute';
+    RonenArielySettingDiv.style.left = 'calc(50% - 150px)';
+    RonenArielySettingDiv.style.top = 'calc(50% - 75px)';
+    RonenArielySettingDiv.style.width = '300px';
+    RonenArielySettingDiv.style.height = '150px';
+    RonenArielySettingDiv.style.padding = '10px';
+    RonenArielySettingDiv.style.background = '#00ff00';
+    RonenArielySettingDiv.innerHTML = 'Enter your setting for the page';
+    RonenArielySettingDiv.style.zIndex = '999';
+
+    /*------------------------------------------------------- input */
+    RonenArielySettingDiv.appendChild(document.createElement("br"));
+
+    let RonenArielyInput1 = document.createElement("input");
+    RonenArielyInput1.setAttribute("id", "input01");
+    RonenArielyInput1.setAttribute("type", "checkbox");
+    RonenArielyInput1.style.verticalAlign = "top";
+    if (document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput1='))) {
+        //alert(document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput1=')).split('=')[1]);
+        if((document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput1=')).split('=')[1]) == "true"){
+            RonenArielyInput1.checked = true;
+        }
+        else{
+            RonenArielyInput1.checked = false;
+        }
+    }
+    RonenArielySettingDiv.appendChild(RonenArielyInput1);
+
+    let RonenArielyS1 = document.createElement("span");
+    RonenArielyS1.innerHTML = "Use Clean Page";
+    RonenArielySettingDiv.appendChild(RonenArielyS1);
+
+    RonenArielySettingDiv.appendChild(document.createElement("br"));
+
+    let RonenArielyInput2 = document.createElement("input");
+    RonenArielyInput2.setAttribute("id", "input02");
+    RonenArielyInput2.setAttribute("type", "checkbox");
+    RonenArielyInput2.style.verticalAlign = "top";
+    if (document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2='))) {
+        //alert(document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2=')).split('=')[1]);
+        if((document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2=')).split('=')[1]) == "true"){
+            RonenArielyInput2.checked = true;
+        }
+        else{
+            RonenArielyInput2.checked = false;
+        }
+    }
+    RonenArielySettingDiv.appendChild(RonenArielyInput2);
+
+    let RonenArielyS2 = document.createElement("span");
+    RonenArielyS2.innerHTML = "Use Show/Hide Content";
+    RonenArielySettingDiv.appendChild(RonenArielyS2);
+
+    RonenArielySettingDiv.appendChild(document.createElement("br"));
+
+    /*------------------------------------------------------- Add Setting */
+    var RonenArielyCloseButton = document.createElement("button");
+    RonenArielyCloseButton.innerHTML = "Store Setting In Cookies";
+    RonenArielyCloseButton.style.marginRight = "5px";
+    RonenArielyCloseButton.style.marginLeft = "5px";
+    RonenArielyCloseButton.addEventListener ("click", function() {
+        //alert(RonenArielyInput1.checked);
+        document.cookie = "RonenArielyInput1=" + document.getElementById("input01").checked;
+        document.cookie = "RonenArielyInput2=" + document.getElementById("input02").checked;
+        document.getElementById("RonenArielySettingDiv").remove();
+    });
+    RonenArielySettingDiv.appendChild(RonenArielyCloseButton);
+
+
+    document.body.appendChild(RonenArielySettingDiv);
+
 }
 
 function RonenArielyCleanPage () {
@@ -253,6 +356,7 @@ function RonenArielyCleanPage () {
     //document.getElementById("Page_Structure").innerHTML = "Disabled";
     document.getElementById("Page_Structure").remove();
 
+    document.cookie = "RonenArielyInput1=true";
 }
 
 
@@ -302,6 +406,7 @@ function RonenArielySubContent () {
 //         });
 
     }
+    document.cookie = "RonenArielyInput2=true";
 }
 
 function MyaddEventListener (_ThreadContent, _ThreadID, _URL){
