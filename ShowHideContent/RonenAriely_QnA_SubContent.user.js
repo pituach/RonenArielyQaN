@@ -2,7 +2,7 @@
 // @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      2.0
+// @version      2.1
 // @description  Improving the looks & feel of the new Microsoft QnA forums. Adding new features and better compact design
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/*
@@ -10,6 +10,7 @@
 // @exclude      https://docs.microsoft.com/en-us/answers/idea/*
 // @exclude      https://docs.microsoft.com/en-us/answers/questions/*
 // @resource     RonenArielyicon https://github.com/pituach/RonenArielyQaN/raw/master/RonenArielyKey.gif
+// @require      http://code.jquery.com/jquery-3.4.1.min.js
 // @grant        GM_addStyle
 // @grant        GM.xmlHttpRequest
 // @grant        GM.getResourceUrl
@@ -33,7 +34,8 @@
 //       More work is needed to add all the tags and splut them into groups
 // 1.8 : (1) Moving the Ronen Ariely Scripts location and remove my name
 // 1.9 : Adding option to store setting in cookies
-// 2.0 :
+// 2.0 : Update the code to fit the latest UI of the site which was changed
+// 2.1 : Add new option! Advance Search
 
 ****************************************************/
 
@@ -55,7 +57,174 @@ function RonenAriely (zEvent) {
     window.onload = RonenArielyOnLoad();
 }
 
+
+function Add2Search(tag){
+    //if (tag.selectedIndex != 0) top.location.href = "https://docs.microsoft.com/en-us/answers/topics/" + tag.options[tag.selectedIndex].value + ".html";return 1;
+    //if (tag.selectedIndex != 0) alert("https://docs.microsoft.com/en-us/answers/topics/" + tag.options[tag.selectedIndex].value + ".html");return 1;
+
+    $("#RonenArielySelectedTags")[0].add(new Option(tag.options[tag.selectedIndex].value, tag.options[tag.selectedIndex].value));
+    $("#RonenArielyUnSelectedTags")[0].remove(tag.selectedIndex);
+}
+function Remove2Search(tag){
+    $("#RonenArielyUnSelectedTags")[0].add(new Option(tag.options[tag.selectedIndex].value, tag.options[tag.selectedIndex].value));
+    $("#RonenArielySelectedTags")[0].remove(tag.selectedIndex);
+}
+function Go2Search(){
+    //$("#RonenArielyAdvanceSearchDiv").remove();
+    //let URL = 'https://docs.microsoft.com/en-us/answers/search.html?type=question+OR+idea&redirect=search%2Fsearch&sort=relevance&q=';
+    let URL = 'https://docs.microsoft.com/en-us/answers/search.html?redirect=search%2Fsearch&sort=relevance';
+
+    URL += '&type=';
+    if(document.getElementById("RonenArielyTypeQuestion").checked) URL += "question+OR";
+    if(document.getElementById("RonenArielyTypeIdea").checked) URL += "idea+OR";
+    if(document.getElementById("RonenArielyTypeAnswer").checked) URL += "answer+OR";
+
+    URL += '&q=';
+    for(i = 0; i < $("#RonenArielySelectedTags")[0].options.length; i++) {
+        URL += "%5B" + $("#RonenArielySelectedTags")[0].options[i].value + "%5D";
+    }
+    // https://docs.microsoft.com/en-us/answers/search.html?c=&includeChildren=&f=&type=question+OR+idea+OR+kbentry+OR+answer+OR+topic+OR+user&redirect=search%2Fsearch&sort=relevance&q=%5Bazure-sql-database%5D%5Bazure-sql-virtual-machines%5D
+    top.location.href = URL;
+    return 1;
+}
+function CancelSearch(){
+    $("#RonenArielyAdvanceSearchDiv").remove();
+    return 1;
+}
+
+function RonenArielyAdvanceSearch () {
+    //alert("This is advance search");
+
+    var RonenArielySearchDiv = document.createElement('div');
+    RonenArielySearchDiv.setAttribute("id", "RonenArielyAdvanceSearchDiv");
+    RonenArielySearchDiv.style.border = "2px solid #0066CC";
+    RonenArielySearchDiv.style.padding = "0px 4px 4px 3px";
+    RonenArielySearchDiv.style.position = 'absolute';
+    RonenArielySearchDiv.style.left = 'calc(50% - 250px)';
+    RonenArielySearchDiv.style.top = '50px';
+    RonenArielySearchDiv.style.width = '500px';
+    RonenArielySearchDiv.style.height = '400px';
+    RonenArielySearchDiv.style.padding = '10px';
+    RonenArielySearchDiv.style.background = '#00ff00';
+    RonenArielySearchDiv.innerHTML = 'Advance Search';
+    RonenArielySearchDiv.style.zIndex = '999';
+
+    RonenArielySearchDiv.appendChild(document.createElement("br"));
+    /****************************************************************************  */
+    /************************************************* add the UnSelectedTags list */
+
+    let UnSelectedTags = document.createElement("select");
+    UnSelectedTags.setAttribute("id", "RonenArielyUnSelectedTags");
+    UnSelectedTags.setAttribute("size", "10");
+    UnSelectedTags.multiple = true;
+    UnSelectedTags.addEventListener ("change", function() {
+        Add2Search(this)
+    });
+    let NewOption = document.createElement("option");
+    NewOption.text = "Select forum";
+    NewOption.disabled = true;
+    NewOption.selected = true;
+    UnSelectedTags.add(NewOption);
+    //------------------------------------------------------- add tags from list
+    let MyGroup = document.createElement("optgroup");
+    MyGroup.label = "Data Platform";
+    UnSelectedTags.add(MyGroup);
+    let TagsList = [
+        "azure-database-migration","azure-sql-database","azure-sql-virtual-machines","azure-synapse-analytics","azure-virtual-machines"
+        ,"azure-data-factory"
+    ]
+    for(i = 0; i < TagsList.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = TagsList[i];
+        NewOption.value = TagsList[i];
+        UnSelectedTags.add(NewOption);
+    }
+    RonenArielySearchDiv.appendChild(UnSelectedTags);
+
+    /****************************************************************************  */
+    /************************************************* add the SelectedTags list */
+    let SelectedTags = document.createElement("select");
+    SelectedTags.setAttribute("id", "RonenArielySelectedTags");
+    UnSelectedTags.setAttribute("size", "10");
+    SelectedTags.multiple = true;
+    SelectedTags.addEventListener ("change", function() {
+        Remove2Search(this)
+    });
+    RonenArielySearchDiv.appendChild(SelectedTags);
+
+    RonenArielySearchDiv.appendChild(document.createElement("br"));
+    RonenArielySearchDiv.appendChild(document.createElement("br"));
+    /****************************************************************************  */
+    /************************************************* select types */
+    // type=question+OR+idea+OR+kbentry+OR+answer+OR+topic+OR+user
+    let RonenArielyTypeInput = document.createElement("input");
+    RonenArielyTypeInput.setAttribute("id", "RonenArielyTypeQuestion");
+    RonenArielyTypeInput.setAttribute("type", "checkbox");
+    RonenArielyTypeInput.setAttribute("value", "question");
+    RonenArielySearchDiv.appendChild(RonenArielyTypeInput);
+    let RonenArielySpanInput = document.createElement("span");
+    RonenArielySpanInput.innerHTML = " question ";
+    RonenArielySearchDiv.appendChild(RonenArielySpanInput);
+    RonenArielySearchDiv.appendChild(document.createElement("br"));
+
+    RonenArielyTypeInput = document.createElement("input");
+    RonenArielyTypeInput.setAttribute("id", "RonenArielyTypeIdea");
+    RonenArielyTypeInput.setAttribute("type", "checkbox");
+    RonenArielyTypeInput.setAttribute("value", "idea");
+    RonenArielySearchDiv.appendChild(RonenArielyTypeInput);
+    RonenArielySpanInput = document.createElement("span");
+    RonenArielySpanInput.innerHTML = " idea ";
+    RonenArielySearchDiv.appendChild(RonenArielySpanInput);
+    RonenArielySearchDiv.appendChild(document.createElement("br"));
+
+    RonenArielyTypeInput = document.createElement("input");
+    RonenArielyTypeInput.setAttribute("id", "RonenArielyTypeAnswer");
+    RonenArielyTypeInput.setAttribute("type", "checkbox");
+    RonenArielyTypeInput.setAttribute("value", "answer");
+    RonenArielySearchDiv.appendChild(RonenArielyTypeInput);
+    RonenArielySpanInput = document.createElement("span");
+    RonenArielySpanInput.innerHTML = " answer ";
+    RonenArielySearchDiv.appendChild(RonenArielySpanInput);
+    RonenArielySearchDiv.appendChild(document.createElement("br"));
+
+    // NewOption.selected = true
+
+    /****************************************************************************  */
+    var RonenArielyGoSearchButton = document.createElement("button");
+    RonenArielyGoSearchButton.innerHTML = "GO Search";
+    RonenArielyGoSearchButton.addEventListener ("click", function() {
+        Go2Search();
+    });
+    RonenArielySearchDiv.appendChild(RonenArielyGoSearchButton);
+
+    /****************************************************************************  */
+    var RonenArielyCancelSearchButton = document.createElement("button");
+    RonenArielyCancelSearchButton.innerHTML = "Cancel";
+    RonenArielyCancelSearchButton.addEventListener ("click", function() {
+        CancelSearch();
+    });
+    RonenArielySearchDiv.appendChild(RonenArielyCancelSearchButton);
+
+    /****************************************************************************  */
+    document.body.appendChild(RonenArielySearchDiv);
+
+}
+
+
 function RonenArielyOnLoad () {
+
+    /*-------------------------------------------------------  Advance Search Button */
+    var RonenArielyAdvanceSearchButton = document.createElement("button");
+    RonenArielyAdvanceSearchButton.setAttribute("id", "RonenArielyAdvanceSearch");
+    RonenArielyAdvanceSearchButton.innerHTML = "Advance";
+    RonenArielyAdvanceSearchButton.style.backgroundColor = "#66AAFF";
+    RonenArielyAdvanceSearchButton.style.color = "#ffffff";
+    RonenArielyAdvanceSearchButton.addEventListener ("click", function() {
+        RonenArielyAdvanceSearch();
+    });
+    let $ = window.jQuery;
+    $( "form[role='search']" )[0].style.width="calc(100% - 100px)";
+    $( "form[role='search']" )[0].after(RonenArielyAdvanceSearchButton);
 
     /*------------------------------------------------------- Adding the buttons scripts in new div RonenArielyDiv */
     //document.getElementsByClassName("nav-bar")[1].style.lineHeight = "54px"; // This will put the content in the middle, It fit the high of the .nav-bar class
@@ -236,8 +405,8 @@ function RonenArielySetting () {
     RonenArielyCloseButton.style.marginLeft = "5px";
     RonenArielyCloseButton.addEventListener ("click", function() {
         //alert(RonenArielyInput1.checked);
-        document.cookie = "RonenArielyInput1=" + document.getElementById("input01").checked + "; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
-        document.cookie = "RonenArielyInput2=" + document.getElementById("input02").checked + "; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
+        document.cookie = "RonenArielyInput1=" + document.getElementById("input01").checked + "; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
+        document.cookie = "RonenArielyInput2=" + document.getElementById("input02").checked + "; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
         document.getElementById("RonenArielySettingDiv").remove();
     });
     RonenArielySettingDiv.appendChild(RonenArielyCloseButton);
@@ -369,7 +538,7 @@ function RonenArielyCleanPage () {
     //document.getElementById("Page_Structure").innerHTML = "Disabled";
     document.getElementById("Page_Structure").remove();
 
-    document.cookie = "RonenArielyInput1=true; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
+    document.cookie = "RonenArielyInput1=true; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
 }
 
 
@@ -419,7 +588,7 @@ function RonenArielySubContent () {
 //         });
 
     }
-    document.cookie = "RonenArielyInput2=true; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
+    document.cookie = "RonenArielyInput2=true; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
 }
 
 function MyaddEventListener (_ThreadContent, _ThreadID, _URL){
