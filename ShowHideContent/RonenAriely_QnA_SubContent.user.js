@@ -2,12 +2,13 @@
 // @name         RonenAriely_QnA_SubContent
 // @namespace    https://ariely.info/
 // @icon         http://ariely.info/favicon.ico
-// @version      1.9
-// @description  I hate the new interface which make me open each thread in seperate page only in order to view if I actually want to respond. Therefore I create this extenation to show the contact of the question.
+// @version      2.0
+// @description  Improving the looks & feel of the new Microsoft QnA forums. Adding new features and better compact design
 // @author       Ronen Ariely
 // @match        https://docs.microsoft.com/en-us/answers/*
 // @include
-// @exclude
+// @exclude      https://docs.microsoft.com/en-us/answers/idea/*
+// @exclude      https://docs.microsoft.com/en-us/answers/questions/*
 // @resource     RonenArielyicon https://github.com/pituach/RonenArielyQaN/raw/master/RonenArielyKey.gif
 // @grant        GM_addStyle
 // @grant        GM.xmlHttpRequest
@@ -16,6 +17,8 @@
 // ==/UserScript==
 
 /************** Edit this section as you like ********/
+// https://docs.microsoft.com/en-us/answers/index.html
+// https://docs.microsoft.com/en-us/answers/content/idea/list.html
 //
 
 
@@ -30,6 +33,7 @@
 //       More work is needed to add all the tags and splut them into groups
 // 1.8 : (1) Moving the Ronen Ariely Scripts location and remove my name
 // 1.9 : Adding option to store setting in cookies
+// 2.0 :
 
 ****************************************************/
 
@@ -54,7 +58,7 @@ function RonenAriely (zEvent) {
 function RonenArielyOnLoad () {
 
     /*------------------------------------------------------- Adding the buttons scripts in new div RonenArielyDiv */
-    document.getElementsByClassName("nav-bar")[1].style.lineHeight = "54px"; // This will put the content in the middle, It fit the high of the .nav-bar class
+    //document.getElementsByClassName("nav-bar")[1].style.lineHeight = "54px"; // This will put the content in the middle, It fit the high of the .nav-bar class
 
     var RonenArielyDiv = document.createElement("div");
     RonenArielyDiv.setAttribute("id", "RonenArielyDiv");
@@ -65,12 +69,14 @@ function RonenArielyOnLoad () {
     //RonenArielyDiv.style.display = "contents";
     //document.getElementsByClassName("nav-bar is-content")[0].getElementsByClassName("nav-bar-spacer")[0].appendChild(RonenArielyDiv);
     //RonenArielyDiv.style.float = "left";
-    RonenArielyDiv.style.display = "inline";
+    //RonenArielyDiv.style.display = "flex";
+    RonenArielyDiv.style.margin = "auto";
     //RonenArielyDiv.style.margin = "10px";
     RonenArielyDiv.style.float = "right";
-    document.getElementsByClassName("has-padding-none has-flex-grow")[0].style.float = "left";
-    document.getElementsByClassName("has-padding-none has-flex-grow")[0].style.margin = "3px";
-    document.getElementsByClassName("has-padding-none has-flex-grow")[0].after(RonenArielyDiv);
+    //document.getElementsByClassName("has-padding-none has-flex-grow")[0].style.float = "left";
+    //document.getElementsByClassName("has-padding-none has-flex-grow")[0].style.margin = "3px";
+    //document.getElementsByClassName("has-padding-none has-flex-grow")[0].after(RonenArielyDiv);
+    document.getElementsByClassName("nav-bar-spacer")[0].after(RonenArielyDiv);
 
     /************************************************************************** Adding the content to RonenArielyDiv */
 
@@ -79,6 +85,7 @@ function RonenArielyOnLoad () {
     var RonenArielyiconS = document.createElement("span");
     RonenArielyiconS.style.border = "2px solid #0066CC";
     RonenArielyiconS.style.padding = "0px 4px 4px 3px";
+    RonenArielyiconS.style.margin = "auto";
 
     var RonenArielyiconA = document.createElement("a");
     RonenArielyiconA.setAttribute("id", "RonenArielySite");
@@ -105,6 +112,8 @@ function RonenArielyOnLoad () {
     RonenArielySettingButton.innerHTML = "Setting";
     RonenArielySettingButton.style.backgroundColor = "#0066CC";
     RonenArielySettingButton.style.color = "#ffffff";
+    RonenArielySettingButton.style.margin = "auto";
+    RonenArielySettingButton.style.height = "30px";
     RonenArielySettingButton.addEventListener ("click", function() {
         RonenArielySetting();
     });
@@ -121,6 +130,8 @@ function RonenArielyOnLoad () {
     RonenArielyCleanPageButton.addEventListener ("click", function() {
         RonenArielyCleanPage ();
     });
+    RonenArielyCleanPageButton.style.margin = "auto";
+    RonenArielyCleanPageButton.style.height = "30px";
     RonenArielyCleanPageButton.style.marginRight = "5px";
     RonenArielyCleanPageButton.style.marginLeft = "5px";
     RonenArielyDiv.appendChild(RonenArielyCleanPageButton);
@@ -134,6 +145,8 @@ function RonenArielyOnLoad () {
     RonenArielySubContentButton.addEventListener ("click", function() {
         RonenArielySubContent ();
     });
+    RonenArielySubContentButton.style.margin = "auto";
+    RonenArielySubContentButton.style.height = "30px";
     RonenArielySubContentButton.style.marginRight = "5px";
     RonenArielySubContentButton.style.marginLeft = "5px";
     RonenArielyDiv.appendChild(RonenArielySubContentButton);
@@ -201,7 +214,6 @@ function RonenArielySetting () {
     RonenArielyInput2.setAttribute("type", "checkbox");
     RonenArielyInput2.style.verticalAlign = "top";
     if (document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2='))) {
-        //alert(document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2=')).split('=')[1]);
         if((document.cookie.split('; ').find(row => row.startsWith('RonenArielyInput2=')).split('=')[1]) == "true"){
             RonenArielyInput2.checked = true;
         }
@@ -224,8 +236,8 @@ function RonenArielySetting () {
     RonenArielyCloseButton.style.marginLeft = "5px";
     RonenArielyCloseButton.addEventListener ("click", function() {
         //alert(RonenArielyInput1.checked);
-        document.cookie = "RonenArielyInput1=" + document.getElementById("input01").checked;
-        document.cookie = "RonenArielyInput2=" + document.getElementById("input02").checked;
+        document.cookie = "RonenArielyInput1=" + document.getElementById("input01").checked + "; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
+        document.cookie = "RonenArielyInput2=" + document.getElementById("input02").checked + "; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
         document.getElementById("RonenArielySettingDiv").remove();
     });
     RonenArielySettingDiv.appendChild(RonenArielyCloseButton);
@@ -342,6 +354,7 @@ function RonenArielyCleanPage () {
     //document.getElementById("RonenArielyDiv").append(ListOfForums);
     document.getElementById("Page_Structure").after(ListOfForums);
     document.getElementById("RonenArielyListOfForums").style.color = "#ffffff";
+    document.getElementById("RonenArielyListOfForums").style.margin = "auto";
 
     /************************************************** chenge width to 100% *****/
     document.getElementsByClassName("span8 mainContent")[0].style.width = "100%";
@@ -356,7 +369,7 @@ function RonenArielyCleanPage () {
     //document.getElementById("Page_Structure").innerHTML = "Disabled";
     document.getElementById("Page_Structure").remove();
 
-    document.cookie = "RonenArielyInput1=true";
+    document.cookie = "RonenArielyInput1=true; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
 }
 
 
@@ -406,7 +419,7 @@ function RonenArielySubContent () {
 //         });
 
     }
-    document.cookie = "RonenArielyInput2=true";
+    document.cookie = "RonenArielyInput2=true; Expires=Wed, 21 Oct 2021 07:28:00 GMT; path=/";
 }
 
 function MyaddEventListener (_ThreadContent, _ThreadID, _URL){
