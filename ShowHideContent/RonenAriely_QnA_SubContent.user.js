@@ -112,7 +112,6 @@ function RonenArielyAdvanceSearch () {
     RonenArielySearchDiv.appendChild(document.createElement("br"));
     /****************************************************************************  */
     /************************************************* add the UnSelectedTags list */
-
     let UnSelectedTags = document.createElement("select");
     UnSelectedTags.setAttribute("id", "RonenArielyUnSelectedTags");
     UnSelectedTags.setAttribute("size", "10");
@@ -139,13 +138,47 @@ function RonenArielyAdvanceSearch () {
         NewOption.value = TagsList[i];
         UnSelectedTags.add(NewOption);
     }
+    //------------------------------------------------------- Office
+    MyGroup = document.createElement("optgroup");
+    MyGroup.label = "Office";
+    UnSelectedTags.add(MyGroup);
+    TagsList = ["teams", "teams-linux"]
+    for(i = 0; i < TagsList.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = TagsList[i];
+        NewOption.value = TagsList[i];
+        UnSelectedTags.add(NewOption);
+    }
+    //------------------------------------------------------- Virtual Machines
+    MyGroup = document.createElement("optgroup");
+    MyGroup.label = "Virtual Machines";
+    UnSelectedTags.add(MyGroup);
+    TagsList = ["azure-sql-virtual-machines","windows-10-setup"]
+    for(i = 0; i < TagsList.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = TagsList[i];
+        NewOption.value = TagsList[i];
+        UnSelectedTags.add(NewOption);
+    }
+    //------------------------------------------------------- More....
+    MyGroup = document.createElement("optgroup");
+    MyGroup.label = "More...";
+    UnSelectedTags.add(MyGroup);
+    TagsList = ["azure-active-directory","azure-ad-app-development","azure-ad-app-management","azure-ad-audit-logs","azure-ad-authentication-protocols","azure-ad-b2c","azure-ad-connect","azure-ad-device-management","azure-ad-fs","azure-ad-group-management","azure-ad-identity-governance","azure-ad-licensing","azure-ad-multi-factor-authentication","azure-ad-password-protection","azure-ad-privileged-identity-management","azure-ad-sign-in-logs","azure-ad-sspr","azure-ad-user-management","azure-analysis-services","azure-api-fhir","azure-app-configuration","azure-arc","azure-automation","azure-backup","azure-batch","azure-bing-custom","azure-bing-image","azure-bing-spellcheck","azure-bing-visual","azure-blob-storage","azure-blockchain-workbench","azure-bot-service","azure-cdn","azure-cloud-services","azure-cognitive-services","azure-container-instances","azure-content-moderator","azure-cost-management","azure-cyclecloud","azure-database-migration","azure-database-postgresql","azure-databricks","azure-data-explorer","azure-data-lake-analytics","azure-data-science-vm","azure-ddos-protection","azure-dedicated-hsm","azure-dev-tool-integrations","azure-disk-encryption","azure-dns","azure-ad-access-reviews","azure-ad-app-registration","azure-ad-b2b","azure-ad-connect-health","azure-ad-graph","azure-ad-libraries","azure-ad-pass-through-authentication","azure-ad-rbac","azure-ad-tenant","azure-anomaly-detector","azure-application-gateway","azure-avere-vfxt","azure-bing-autosuggest","azure-bing-news","azure-bing-web","azure-blueprints","azure-classroom-labs","azure-computer-vision","azure-cosmos-db","azure-database-mariadb","azure-data-box-family","azure-data-factory","azure-data-share","azure-devtestlabs","azure-disk-storage","azure-ad-application-proxy","azure-ad-conditional-access","azure-ad-hybrid-identity","azure-ad-powershell","azure-ad-user-provisioning","azure-archive-storage","azure-bing-entity","azure-blockchain-service","azure-cognitive-search","azure-custom-vision","azure-data-catalog","azure-dedicated-host","adfs","azure-ad-domain-services","azure-ad-single-sign-on","azure-bastion","azure-cache-redis","azure-database-mysql","azure-digital-twins","azure-ad-microsoft-account","azure-bing-video","azure-data-lake-storage","azure-api-management","azure-ad-authentication","azure-container-registry"];
+    for(i = 0; i < TagsList.length; i++) {
+        let NewOption = document.createElement("option");
+        NewOption.text = TagsList[i];
+        NewOption.value = TagsList[i];
+        UnSelectedTags.add(NewOption);
+    }
+    //-------------------------------------------------------
     RonenArielySearchDiv.appendChild(UnSelectedTags);
 
     /****************************************************************************  */
     /************************************************* add the SelectedTags list */
     let SelectedTags = document.createElement("select");
     SelectedTags.setAttribute("id", "RonenArielySelectedTags");
-    UnSelectedTags.setAttribute("size", "10");
+    SelectedTags.setAttribute("size", "10");
     SelectedTags.multiple = true;
     SelectedTags.addEventListener ("change", function() {
         Remove2Search(this)
