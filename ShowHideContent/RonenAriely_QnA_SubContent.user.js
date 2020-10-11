@@ -3,7 +3,7 @@
 // @description  This script Improving the looks & feel of the new Microsoft QnA forums.
 // @author       Ronen Ariely
 // @namespace    https://ariely.info/
-// @version      3.1
+// @version      3.3
 // @icon         http://ariely.info/favicon.ico
 // @match        https://docs.microsoft.com/en-us/answers/*
 // @include
@@ -44,7 +44,10 @@
 // 2.1 : Add new option! Advance Search
 //
 // 3.0 : Remove the ifram with the feedback request
-
+// 3.1 : Adjast the code to a change in page's DOM which make this extension not work
+//       I addition I re organize the script a bit
+// 3.2 :
+// 3.3 : adding supprt for "Show more comments" for long threads
 
 /**********************************************************************/
 /**********************************************************************/
@@ -75,8 +78,9 @@ function RonenArielyOnLoad () {
     /*------------------------------------------------------------------------------  */
     /*------------------------------------------------------- Remove Feedback Request */
     // If the forum popup a request to fill a feedback then you can un-comment the following line.
-    // This functio will disable the feedback request.
+    // This function will disable the feedback request.
     // document.body.addEventListener('DOMSubtreeModified', OnSubtreeModified, false);
+    // Another option is to install a sepearet script from the GitHub: https://github.com/pituach/RonenArielyQaN/tree/master/RemoveFeedbackRequest
 
     /*------------------------------------------------------------------------------  */
     /*------------------------------------------------------------------------------  */
@@ -487,6 +491,7 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
     // Show/Hide Button
     var ShowHidContentButton = document.createElement("button");
     ShowHidContentButton.setAttribute("id", "ShowHidContentButton_" + _ThreadID);
+    ShowHidContentButton.style.margin = "0px 5px 0px 10px";
     ShowHidContentButton.innerHTML = "❎";
     document.getElementsByClassName("col-xs-1 col-sm-2 col-md-1 icon-wrapper")[_ThreadContent].appendChild(ShowHidContentButton);
     ShowHidContentButton.addEventListener ("click", function() {ShowHidContent("ContentDiv_" + _ThreadContent, "ShowHidContentButton_" + _ThreadID);});
@@ -500,7 +505,7 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
 
     var MyDiv0 = document.createElement("div");
     MyDiv0.setAttribute("id", "ContentDiv0_" + _ThreadContent);
-    MyDiv0.style.width = "100px";
+    MyDiv0.style.width = "115px";
     MyDiv0.style.float = "left";
     MyDiv0.innerHTML = "&nbsp;&nbsp;&nbsp;";
     MyDiv.append(MyDiv0);
@@ -511,7 +516,7 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
     MyDiv1.style.backgroundColor = "#DDDDFF";
 //     MyDiv1.style.border = "1px solid rgb(129, 175, 245);";
 //     MyDiv1.style.backgroundColor = "rgb(244, 244, 255, 1);";
-    MyDiv1.style.width = "calc(100% - 110px)";
+    MyDiv1.style.width = "calc(100% - 115px)";
     MyDiv1.style.float = "left";
     MyDiv1.innerHTML = "Loading...";
     MyDiv.append(MyDiv1);
@@ -569,6 +574,14 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
             i = htmlDoc.getElementsByClassName("post-tools").length;
             while (i--) {
                 htmlDoc.getElementsByClassName("post-tools")[i].remove();
+            }
+
+
+            for (i = 0; i < htmlDoc.getElementsByClassName("comments-expand").length; i++) {
+                //htmlDoc.getElementsByClassName("comments-expand")[i].style.display = "none";
+                htmlDoc.getElementsByClassName("comments-expand")[i].href = "https://docs.microsoft.com/en-us/" + _URL;
+                //htmlDoc.getElementsByClassName("comments-expand")[i].setAttribute('target', '_blank');
+                htmlDoc.getElementsByClassName("comments-expand")[i].innerHTML = "In order to load more comments, click here to open the thread in separate page";
             }
 
             /*************************** Adding the content of the original Question or Idea *****************  */
