@@ -3,7 +3,7 @@
 // @description  This script Improving the looks & feel of the new Microsoft QnA forums.
 // @author       Ronen Ariely
 // @namespace    https://ariely.info/
-// @version      3.3
+// @version      3.4
 // @icon         http://ariely.info/favicon.ico
 // @match        https://docs.microsoft.com/en-us/answers/*
 // @include
@@ -48,7 +48,13 @@
 //       I addition I re organize the script a bit
 // 3.2 :
 // 3.3 : adding supprt for "Show more comments" for long threads
-
+// 3.4 : (1) Update the cookie Expires time (exists in several places in the code - should replace with variable)
+//       "RonenArielyInput2=true; Expires=Wed, 27 Feb 2022 07:28:00 GMT; path=/"
+//       "RonenArielyInput1=true; Expires=Wed, 27 Feb 2022 07:28:00 GMT; path=/"
+//       (2) The DOM was changed so we need to update the code to fit the new DOM
+//       The issue is that someone change the name of the class "col-xs-1" into "col-xs-2"
+//       I found no reason for this changhe which blocked the script for no reason
+//
 /**********************************************************************/
 /**********************************************************************/
 /************************** Style our newly added elements using CSS. */
@@ -272,8 +278,8 @@ function RonenArielySetting () {
     RonenArielyCloseButton.style.marginLeft = "5px";
     RonenArielyCloseButton.addEventListener ("click", function() {
         //alert(RonenArielyInput1.checked);
-        document.cookie = "RonenArielyInput1=" + document.getElementById("input01").checked + "; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
-        document.cookie = "RonenArielyInput2=" + document.getElementById("input02").checked + "; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
+        document.cookie = "RonenArielyInput1=" + document.getElementById("input01").checked + "; Expires=Wed, 27 Feb 2022 07:28:00 GMT; path=/";
+        document.cookie = "RonenArielyInput2=" + document.getElementById("input02").checked + "; Expires=Wed, 27 Feb 2022 07:28:00 GMT; path=/";
         document.getElementById("RonenArielySettingDiv").remove();
     });
     RonenArielySettingDiv.appendChild(RonenArielyCloseButton);
@@ -405,7 +411,7 @@ function RonenArielyCleanPage () {
     //document.getElementById("Page_Structure").innerHTML = "Disabled";
     document.getElementById("Page_Structure").remove();
 
-    document.cookie = "RonenArielyInput1=true; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
+    document.cookie = "RonenArielyInput1=true; Expires=Wed, 27 Feb 2022 07:28:00 GMT; path=/";
 }
 
 
@@ -460,14 +466,18 @@ function RonenArielySubContent () {
         RonenArielySubContentLoadButton.style.margin = "0px 5px 0px 10px";
         RonenArielySubContentLoadButton.innerHTML = "➡";
 
-        document.getElementsByClassName("col-xs-1 col-sm-2 col-md-1 icon-wrapper")[i].style.width = "100px";
-        document.getElementsByClassName("col-xs-1 col-sm-2 col-md-1 icon-wrapper")[i].appendChild(RonenArielySubContentLoadButton);
+        //document.getElementsByClassName("col-xs-1 col-sm-2 col-md-1 icon-wrapper")[i].style.width = "100px";
+        //document.getElementsByClassName("col-xs-1 col-sm-2 col-md-1 icon-wrapper")[i].appendChild(RonenArielySubContentLoadButton);
+
+        // col-xs-2 col-sm-2 col-md-1 icon-wrapper
+        document.getElementsByClassName("col-xs-2 col-sm-2 col-md-1 icon-wrapper")[i].style.width = "100px";
+        document.getElementsByClassName("col-xs-2 col-sm-2 col-md-1 icon-wrapper")[i].appendChild(RonenArielySubContentLoadButton);
 
         MyaddEventListener (i, ThreadID, URL);
 
     }
 
-    document.cookie = "RonenArielyInput2=true; Expires=Wed, 27 Feb 2021 07:28:00 GMT; path=/";
+    document.cookie = "RonenArielyInput2=true; Expires=Wed, 27 Feb 2022 07:28:00 GMT; path=/";
 }
 
 function MyaddEventListener (_ThreadContent, _ThreadID, _URL){
@@ -493,7 +503,7 @@ function RonenArielySubContentLoad (_ThreadContent, _ThreadID, _URL) {
     ShowHidContentButton.setAttribute("id", "ShowHidContentButton_" + _ThreadID);
     ShowHidContentButton.style.margin = "0px 5px 0px 10px";
     ShowHidContentButton.innerHTML = "❎";
-    document.getElementsByClassName("col-xs-1 col-sm-2 col-md-1 icon-wrapper")[_ThreadContent].appendChild(ShowHidContentButton);
+    document.getElementsByClassName("col-xs-2 col-sm-2 col-md-1 icon-wrapper")[_ThreadContent].appendChild(ShowHidContentButton);
     ShowHidContentButton.addEventListener ("click", function() {ShowHidContent("ContentDiv_" + _ThreadContent, "ShowHidContentButton_" + _ThreadID);});
 
 
