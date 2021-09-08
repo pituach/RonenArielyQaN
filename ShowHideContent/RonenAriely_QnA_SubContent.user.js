@@ -3,7 +3,7 @@
 // @description  This script Improving the looks & feel of the new Microsoft QnA forums.
 // @author       Ronen Ariely
 // @namespace    https://ariely.info/
-// @version      3.4
+// @version      3.5
 // @icon         http://ariely.info/favicon.ico
 // @match        https://docs.microsoft.com/en-us/answers/*
 // @include
@@ -55,6 +55,9 @@
 //       The issue is that someone change the name of the class "col-xs-1" into "col-xs-2"
 //       I found no reason for this changhe which blocked the script for no reason
 //
+// 3.5 : small fix since the code was changed.
+//       the search form used to have a role property in the form tag which I used it to find the location but the property was removed
+//
 /**********************************************************************/
 /**********************************************************************/
 /************************** Style our newly added elements using CSS. */
@@ -92,7 +95,7 @@ function RonenArielyOnLoad () {
     /*------------------------------------------------------------------------------  */
     /*----------------------------------------------------- Add Advance Search Button */
 
-    // Create new button
+    // Create new button for advance search (after the search inbox)
     var RonenArielyAdvanceSearchButton = document.createElement("button");
     RonenArielyAdvanceSearchButton.setAttribute("id", "RonenArielyAdvanceSearch");
     RonenArielyAdvanceSearchButton.innerHTML = "Advance";
@@ -103,8 +106,14 @@ function RonenArielyOnLoad () {
     });
     // Add the new button
     let $ = window.jQuery;
-    $( "form[role='search']" )[0].style.width="calc(100% - 100px)";
-    $( "form[role='search']" )[0].after(RonenArielyAdvanceSearchButton);
+    // $( "form[role='search']" )[0].style.width="calc(100% - 100px)";
+    // $( "form[role='search']" )[0].after(RonenArielyAdvanceSearchButton);
+    // the search form used to have a role property in the form tag which was removed
+    // We can find the form using: document.getElementsByClassName("navbar-search")
+    //document.getElementsByClassName("navbar-search")[0].after(RonenArielyAdvanceSearchButton);
+    // or we can go directly to the "input" tag
+    $( "input[role='combobox']" )[0].style.width="calc(100% - 100px)";
+    $( "input[role='combobox']" )[0].after(RonenArielyAdvanceSearchButton);
 
     /*------------------------------------------------------------------------------  */
     /*------------------------------------------------------------------------------  */
