@@ -5,8 +5,8 @@
 // @namespace    https://ariely.info/
 // @copyright    2019, Ronen Ariely
 // @homepage     https://github.com/pituach/RonenArielyQaN/
-// @downloadURL  https://github.com/pituach/RonenArielyQaN/blob/master/ShowHideContent/RonenAriely_QnA_SubContent.user.js
-// @updateURL    https://github.com/pituach/RonenArielyQaN/blob/master/ShowHideContent/RonenAriely_QnA_SubContent.user.js
+// @downloadURL  https://github.com/pituach/RonenArielyQaN/raw/master/ShowHideContent/RonenAriely_QnA_SubContent.user.js
+// @updateURL    https://github.com/pituach/RonenArielyQaN/raw/master/ShowHideContent/RonenAriely_QnA_SubContent.user.js
 // @version      3.6
 // @icon         http://ariely.info/favicon.ico
 // @match        https://docs.microsoft.com/en-us/answers/*
