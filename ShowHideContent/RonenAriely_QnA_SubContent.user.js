@@ -1,9 +1,13 @@
 // ==UserScript==
 // @name         RonenAriely_QnA_SubContent
-// @description  This script Improving the looks & feel of the new Microsoft QnA forums.
+// @description  This script Improving the looks & feel of the new Microsoft QnA, and it add several practical functionalities.
 // @author       Ronen Ariely
 // @namespace    https://ariely.info/
-// @version      3.5
+// @copyright    2019, Ronen Ariely
+// @homepage     https://github.com/pituach/RonenArielyQaN/
+// @downloadURL  https://github.com/pituach/RonenArielyQaN/blob/master/ShowHideContent/RonenAriely_QnA_SubContent.user.js
+// @updateURL    https://github.com/pituach/RonenArielyQaN/blob/master/ShowHideContent/RonenAriely_QnA_SubContent.user.js
+// @version      3.6
 // @icon         http://ariely.info/favicon.ico
 // @match        https://docs.microsoft.com/en-us/answers/*
 // @include
@@ -14,6 +18,7 @@
 // @grant        GM_addStyle
 // @grant        GM.xmlHttpRequest
 // @grant        GM.getResourceUrl
+// @grant GM_log
 //
 // ==/UserScript==
 
@@ -95,7 +100,7 @@ function RonenArielyOnLoad () {
     /*------------------------------------------------------------------------------  */
     /*----------------------------------------------------- Add Advance Search Button */
 
-    // Create new button for advance search (after the search inbox)
+    // Create new buttons
     var RonenArielyAdvanceSearchButton = document.createElement("button");
     RonenArielyAdvanceSearchButton.setAttribute("id", "RonenArielyAdvanceSearch");
     RonenArielyAdvanceSearchButton.innerHTML = "Advance";
@@ -347,9 +352,15 @@ function RonenArielyCleanPage () {
     NewOption.selected = true;
     ListOfForums.add(NewOption);
 
-    //------------------------------------------------------- Data Platform
+
+
+
+
+    //------------------------------------------------------- My Favourite
     MyGroup = document.createElement("optgroup");
-    MyGroup.label = "Data Platform";
+    MyGroup.label = "My Favourite";
+    MyGroup.style.fontSize = "large";
+    MyGroup.style.color = "#ffff00";
     ListOfForums.add(MyGroup);
     ListOfForumsArray = [
         "azure-database-migration","azure-sql-database","azure-sql-virtual-machines","azure-synapse-analytics","azure-virtual-machines"
@@ -362,45 +373,112 @@ function RonenArielyCleanPage () {
         ListOfForums.add(NewOption);
     }
 
-    //------------------------------------------------------- Office
-    MyGroup = document.createElement("optgroup");
-    MyGroup.label = "Office";
-    ListOfForums.add(MyGroup);
-    ListOfForumsArray = ["teams", "teams-linux"]
-    for(i = 0; i < ListOfForumsArray.length; i++) {
-        let NewOption = document.createElement("option");
-        NewOption.text = ListOfForumsArray[i];
-        NewOption.value = ListOfForumsArray[i];
-        ListOfForums.add(NewOption);
+
+
+    /*
+
+    (1) Import the data to table from excel
+
+CREATE TABLE [dbo].[QnA_Forum](
+	[PARENT] [varchar](100) NULL,
+	[CHILD] [varchar](100) NULL
+) ON [PRIMARY]
+GO
+
+
+    (2) Get the JSON using
+
+;With MyCTE AS (
+	SELECT c = ('{"' + parent + '":[' + STRING_AGG('"' + CHILD + '"' , ',') WITHIN GROUP (ORDER BY parent) + ']}')
+	FROM QnA_Forum
+	GROUP BY parent
+)
+SELECT '[' + STRING_AGG(CONVERT(VARCHAR(MAX),c) , ',') + ']'
+FROM MyCTE
+GO
+
+
+
+
+    */
+
+    var Tags = [
+        {"azure-ai-machine-learning":["azure-anomaly-detector","azure-bing-autosuggest","azure-bing-custom","azure-bing-entity","azure-bing-image","azure-bing-news","azure-bing-spellcheck","azure-bing-video","azure-bing-visual",
+                                      "azure-bing-web","azure-bot-service","azure-cognitive-services","azure-computer-vision","azure-content-moderator","azure-custom-vision","azure-data-science-vm","azure-face","azure-farmbeats",
+                                      "azure-form-recognizer","azure-genomics","azure-immersive-reader","azure-ink-recognizer","azure-language-understanding","azure-machine-learning","azure-machine-learning-inference","ronen",
+                                      "azure-machine-learning-studio-classic","azure-open-datasets","azure-personalizer","azure-qna-maker","azure-speech","azure-text-analytics","azure-translator"]
+        }
+        ,{"azure-analytics":["azure-analysis-services","azure-databricks","azure-data-catalog","azure-data-explorer","azure-data-factory","azure-data-lake-analytics","azure-data-lake-storage","azure-data-share","azure-event-hubs",
+                             "azure-hdinsight","azure-hdinsight-rserver","azure-stream-analytics","azure-synapse-analytics"]
+         }
+        ,{"azure-blockchain":["azure-blockchain-service","azure-blockchain-workbench"]
+         }
+        ,{"azure-compute":["azure-batch","azure-cloud-services","azure-cyclecloud","azure-dedicated-host","azure-functions","azure-kubernetes-service","azure-sap","azure-service-fabric","azure-service-fabric-mesh",
+                           "service-fabric-standalone","azure-spring-cloud","azure-sql-virtual-machines","azure-virtual-machines","azure-spot","azure-virtual-machines-backup","azure-virtual-machines-extension",
+                           "azure-virtual-machines-images","azure-virtual-machines-migration","azure-virtual-machines-monitoring","azure-virtual-machines-networking","azure-virtual-machines-scale-set","azure-virtual-machines-sql",
+                           "azure-virtual-machines-storage","azure-vmware-solution","windows-virtual-desktop"]
+         }
+        ,{"azure-containers":["azure-container-instances","azure-container-registry","azure-redhat-openshift"]}
+        ,{"azure-databases":["azure-api-fhir","azure-cache-redis","azure-cosmos-db","azure-database-mariadb","azure-database-migration","azure-database-mysql","azure-database-postgresql","azure-sql-database","azure-sqldatabase-edge","azure-table-storage"]}
+        ,{"azure-developer-tools":["azure-app-configuration","azure-devtestlabs","azure-dtl-arm-enviorments","azure-dtl-artifacts","azure-dtl-automation","azure-dtl-base-images","azure-dtl-networks","azure-dtl-schedules","azure-dtl-virtual-machines","azure-dev-tool-integrations","azure-labservices","azure-classroom-labs","azure-lab-services-accounts","azure-lab-services-automation","azure-lab-services-base-images","azure-lab-services-pricing","azure-lab-services-schedules","azure-lab-services-templates-virtual-machines"]}
+        ,{"azure-hybrid":["azure-arc","azure-stack","azure-stack-hci","azure-stack-hub","windows-azure-pack"]}
+        ,{"azure-identity":["azure-active-directory","azure-ad-access-reviews","azure-ad-app-development","azure-ad-application-proxy","azure-ad-app-management","azure-ad-app-registration","azure-ad-audit-logs","azure-ad-authentication","azure-ad-authentication-protocols","azure-ad-b2b","azure-ad-conditional-access","azure-ad-connect","azure-ad-connect-health","azure-ad-device-management","azure-ad-fs","azure-ad-graph","azure-ad-group-management","azure-ad-hybrid-identity","azure-ad-identity-governance","azure-ad-libraries","azure-ad-licensing","azure-ad-microsoft-account","azure-ad-multi-factor-authentication","azure-ad-pass-through-authentication","azure-ad-password-hash-sync","azure-ad-passwordless-authentication","azure-ad-password-protection","azure-ad-privileged-identity-management","azure-ad-rbac","azure-ad-sign-in-logs","azure-ad-single-sign-on","azure-ad-sspr","azure-ad-tenant","azure-ad-user-management","azure-ad-user-provisioning","azure-ad-b2c","azure-ad-domain-services","azure-information-protection"]}
+        ,{"azure-integration":["azure-api-management","azure-event-grid","azure-logic-apps","azure-service-bus"]}
+        ,{"azure-iot":["azure-digital-twins","azure-iot","azure-iot-central","azure-iot-dps","azure-iot-edge","azure-iot-hub","azure-iot-pnp","azure-iot-sdk","azure-maps","azure-rtos","azure-sphere","azure-time-series-insights"]}
+        ,{"azure-management-governance":["azure-automation","azure-backup","azure-blueprints","azure-cost-management","azure-lighthouse","azure-managed-applications","azure-monitor","azure-policy","azure-scheduler","azure-site-recovery"]}
+        ,{"azure-media":["azure-media-services"]}
+        ,{"azure-migration":["azure-migrate"]}
+        ,{"azure-mixed-reality":["azure-kinect-dk","azure-remote-rendering","azure-spatial-anchors"]}
+        ,{"azure-mobile":["azure-notification-hubs"]}
+        ,{"azure-networking":["azure-application-gateway","azure-bastion","azure-cdn","azure-ddos-protection","azure-dns","azure-expressroute","azure-firewall","azure-firewall-manager","azure-front-door","azure-internet-analyzer","azure-load-balancer","azure-network-watcher","azure-private-link","azure-traffic-manager","azure-virtual-network","azure-virtual-wan","azure-vpn-gateway","azure-web-application-firewall"]}
+        ,{"azure-security":["azure-dedicated-hsm","azure-key-vault","azure-security-center","azure-sentinel"]}
+        ,{"azure-storage":["azure-archive-storage","azure-avere-vfxt","azure-blob-storage","azure-data-box-family","azure-disk-encryption","azure-disk-storage","azure-files","azure-file-storage","azure-fxt-edge-filer","azure-hpc-cache","azure-managed-disks","azure-netapp-files","azure-queue-storage","azure-storage-accounts","azure-storage-explorer","azure-storsimple"]}
+        ,{"azure-web":["azure-cognitive-search","azure-signalr-service","azure-webapps","azure-webapps-apis","azure-webapps-authentication","azure-webapps-auto-heal","azure-webapps-availability","azure-webapps-backup","azure-webapps-compliance-reports","azure-webapps-content-deployment","azure-webapps-custom-domains","azure-webapps-development","azure-webapps-hybrid-connection","azure-webapps-ip-addresses","azure-webapps-migration","azure-webapps-monitoring","azure-webapps-performance","azure-webapps-scaling","azure-webapps-security","azure-webapps-ssh","azure-webapps-ssl-certifcates","azure-webapps-vnet","azure-webapps-webjobs"]}
+        ,{"dotnet":["dotnet-ad-docker","dotnet-ad-enterprise","dotnet-ad-installer","dotnet-ad-linux","dotnet-adonet","dotnet-ad-vs","dotnet-android","dotnet-apache-spark","dotnet-aspnet-ajax","dotnet-aspnetcore-blazor","dotnet-aspnetcore-general","dotnet-aspnetcore-mvc","dotnet-aspnetcore-razor","dotnet-aspnetcore-realtime","dotnet-aspnetcore-webapi","dotnet-aspnet-general","dotnet-aspnet-iisnet","dotnet-aspnet-mvc","dotnet-aspnet-spa","dotnet-aspnet-webapi","dotnet-aspnet-webforms","dotnet-aspnet-webpages","dotnet-cli","dotnet-console","dotnet-crossplatform-general","dotnet-csharp","dotnet-entity-framework","dotnet-entity-framework-core","dotnet-fsharp","dotnet-gamedev","dotnet-ios","dotnet-iot","dotnet-macos","dotnet-mlnet","dotnet-mobile-general","dotnet-package-management","dotnet-runtime","dotnet-runtime-core","dotnet-runtime-framework","dotnet-sqlclient","dotnet-sqlite","dotnet-standard","dotnet-tvos","dotnet-visual-basic","dotnet-watchos","dotnet-xamarinessentials"]}
+        ,{"m365-ems":["ems-advanced-threat-analytics"]}
+        ,{"microsoft-endpoint-manager":["microsoft-identity-manager","intune-all","intune-admin-center","intune-application-management","intune-conditional-access","intune-device-configurations","intune-enrollment","intune-general","mem-analytics-reporting","mem-autopilot","mem-intune-graph","mem-mdt","m365-ems-all"]}
+        ,{"microsoft-robotics":["microsoft-robotics-general"]}
+        ,{"ms-edge":["ms-edge"]}
+        ,{"msc-configuration-manager":["me-cm-analytics","me-cm-application","me-cm-cmpivot","me-cm-co-management","me-cm-general","me-cm-osd","me-cm-sdk","me-cm-site-deployment","me-cm-updates"]}
+        ,{"msc-essentials":["msc-essentials-2010","msc-essentials-deployment","msc-essentials-general","msc-essentials-inventory","msc-essentials-monitoring","msc-essentials-rom","msc-essentials-software","msc-essentials-updates"]}
+        ,{"msc-operations-manager":["msc-operations-manager-apm","msc-operations-manager-authoring","msc-operations-manager-deployment","msc-operations-manager-extensibility","msc-operations-manager-general","msc-operations-manager-linux","msc-operations-manager-mp","msc-operations-manager-reporting"]}
+        ,{"msc-orchestrator":["msc-orchestrator-deployment","msc-orchestrator-general","msc-orchestrator-sc-integration","msc-orchestrator-sdk","msc-orchestrator-spf","msc-orchestrator-third-party-integration"]}
+        ,{"msc-service-manager":["msc-service-manager-administration","msc-service-manager-authoring","msc-service-manager-connector","msc-service-manager-data-warehouse","msc-service-manager-general","msc-service-manager-itil","msc-service-manager-portal","msc-service-manager-setup"]}
+        ,{"msc-virtual-machine-manager":["msc-virtual-machine-manager-clustering","msc-virtual-machine-manager-extension-handler","msc-virtual-machine-manager-general","msc-virtual-machine-manager-hyper-v","msc-virtual-machine-manager-sc-integration","msc-virtual-machine-manager-self-service-portal","msc-virtual-machine-manager-setup","msc-virtual-machine-manager-v2v"]}
+        ,{"office":["office-addins-dev","m365-apps-publishing-dev","microsoft-graph-analytics","microsoft-graph-azure-ad","microsoft-graph-calendar","microsoft-graph-calendar-places","microsoft-graph-change-notifications","microsoft-graph-cloud-communications","microsoft-graph-corporate-mgmt","microsoft-graph-cross-device","microsoft-graph-customer-booking","microsoft-graph-data","microsoft-graph-data-connect","microsoft-graph-education","microsoft-graph-explorer","microsoft-graph-extensions","microsoft-graph-files","microsoft-graph-financials","microsoft-graph-general","microsoft-graph-groups","microsoft-graph-insights","microsoft-graph-mail","microsoft-graph-notifications","microsoft-graph-onenote","microsoft-graph-people","microsoft-graph-print","microsoft-graph-profile","microsoft-graph-reports","microsoft-graph-sdk","microsoft-graph-search","microsoft-graph-security","microsoft-graph-sites-lists","microsoft-graph-tasks-plans","microsoft-graph-teams","microsoft-graph-teamwork","microsoft-graph-todo","microsoft-graph-toolkit","microsoft-graph-user-notifications","microsoft-graph-users","microsoft-graph-workbooks","office-deployment","office-excel-itpro","office-for-mac-itpro","office-itpro","office-onedrive-client-itpro","office-onenote-client-itpro","office-outlook-itpro","office-powerpoint-itpro","office-visio-itpro","office-word-itpro","office-exchange-hybrid-itpro","office-exchange-online-itpro","office-exchange-server-administration","office-exchange-server-connectivity","office-exchange-server-deployment","office-exchange-server-ha","office-exchange-server-itpro","office-exchange-server-mailflow","office-js-dev","office-lync-server-administration","office-lync-server-conferencing","office-lync-server-deployment","office-lync-server-edge-servers","office-lync-server-enterprise-voice","office-lync-server-itpro-general","office-lync-server-sign-in","office-online-server-deployment","office-online-server-exchange","office-online-server-general","office-online-server-sfb","office-online-server-sharepoint","office-online-server-view-edit","office-scriptlab-dev","office-sharepoint-online","office-sharepoint-server-administration","office-sharepoint-server-customization","office-sharepoint-server-development","office-sharepoint-server-itpro","office-sharepoint-server-search-itpro","office-skype-business-online-itpro","office-skype-business-server-itpro-all","office-skype-business-server-administration","office-skype-business-server-conferencing","office-skype-business-server-deployment","office-skype-business-server-edge-servers","office-skype-business-server-enterprise-voice","office-skype-business-server-itpro-general","office-skype-business-server-sign-in","office-teams-linux-itpro","office-teams-windows-itpro","office-vba-dev","office-vsto-com-dev","sharepoint-apps-general-dev","sharepoint-workflow-dev"]}
+        ,{"openspecs":["openspecs-all","openspecs-office","openspecs-office-exchange","openspecs-office-fileformats","openspecs-office-sharepoint","openspecs-questions","openspecs-sqlserver","openspecs-windows","openspecs-windows-filesharing"]}
+        ,{"power-query":["power-query-connectors","power-query-dataflows","power-query-desktop","power-query-m","power-query-online"]}
+        ,{"small-basic":["small-basic-community-challenges","small-basic-discussion","small-basic-featured-program","small-basic-general"]}
+        ,{"sql-server":["sql-server-migration","sql-server-migration-assistant","sql-server-windows","sql-server-analysis-services","sql-server-general","sql-server-integration-services","sql-server-reporting-services","sql-server-transact-sql"]}
+        ,{"vs":["vs-debugging","vs-extensions","vs-general","vs-msbuild","vs-setup","vs-testing"]}
+        ,{"windows":["windows-10-application-compatibility","windows-10-general","windows-10-hardware-performance","windows-10-network","windows-10-security","windows-10-setup","windows-10-virtualization","windows-7-application-hardware-compatibility","windows-7-general","windows-7-network","windows-7-setup","windows-7-virtual-pc-xp-mode","windows-8-application-hardware-compatibility","windows-8-general","windows-8-network","windows-8-setup","windows-8-virtualization","winapi-all","winapi-audio-video","winapi-compatibility","winapi-general","winapi-sdk","winapi-security","winapi-ui","windows-forms","windows-iot-10-core","windows-partner-center-api","windows-partner-center-general","windows-partner-center-submission","windows-10-universal","windows-desktop-bridge","windows-runtime","windows-uwp","windows-uwp-feedback","windows-uwp-runtime","windows-uwp-xaml","win-universal-app","windows-wcf","windows-wpf","windows-embedded-all","windows-hardware-certification","windows-hardware-code-audio","windows-hardware-code-camera","windows-hardware-code-general","windows-hardware-code-ndis","windows-hardware-code-storage","windows-hardware-ewdk","windows-hardware-wdk","windows-hardware-wdk-general","windows-active-directory","windows-dhcp-dns","windows-group-policy","windows-home-server-2011","windows-network-access-protection","windows-platform-network","windows-remote-desktop-client","windows-remote-desktop-services","windows-server","windows-server-2012","windows-server-2016","windows-server-2019","windows-server-applicationcompatibility-certification","windows-server-backup","windows-server-branch-office","windows-server-clustering","windows-server-core","windows-server-essentials","windows-server-fslogix","windows-server-hyper-v","windows-server-infrastructure","windows-server-ipv6","windows-server-management","windows-server-manager","windows-server-migration","windows-server-nano","windows-server-powershell","windows-server-print","windows-server-security","windows-server-setup","windows-server-storage","windows-server-update-services","windows-server-virtualization","windows-small-business-server"]}
+        ,{"windows-sysinternals":["windows-sysinternals-autoruns","windows-sysinternals-bginfo","windows-sysinternals-general","windows-sysinternals-misc-utilities","windows-sysinternals-procexp","windows-sysinternals-procmon","windows-sysinternals-pstools","windows-sysinternals-sysmon"]}
+    ];
+    //alert(Object.values(Tags).length);
+
+
+    for (var x = 0; x < Object.values(Tags).length; x++) {
+    //for (var x = 0; x < 5; x++) {
+
+        MyGroup = document.createElement("optgroup");
+        MyGroup.label = Object.keys(Object.values(Tags)[x])[0];
+        MyGroup.style.fontSize = "large";
+        MyGroup.style.color = "#ffff00";
+        ListOfForums.add(MyGroup);
+        //alert(Object.values(Object.values(Tags)[x])[0].length);
+        //alert(Object.values(RonenList)[0].length);
+        for (var i = 0; i < Object.values(Object.values(Tags)[x])[0].length; i++) {
+            let NewOption = document.createElement("option");
+            NewOption.text = Object.values(Object.values(Tags)[x])[0][i];
+            NewOption.value = Object.values(Object.values(Tags)[x])[0][i];
+            ListOfForums.add(NewOption);
+        }
+
+
     }
 
-    //------------------------------------------------------- Virtual Machines
-    MyGroup = document.createElement("optgroup");
-    MyGroup.label = "Virtual Machines";
-    ListOfForums.add(MyGroup);
-    ListOfForumsArray = ["azure-sql-virtual-machines","windows-10-setup"]
-    for(i = 0; i < ListOfForumsArray.length; i++) {
-        let NewOption = document.createElement("option");
-        NewOption.text = ListOfForumsArray[i];
-        NewOption.value = ListOfForumsArray[i];
-        ListOfForums.add(NewOption);
-    }
 
-    //------------------------------------------------------- More....
-    MyGroup = document.createElement("optgroup");
-    MyGroup.label = "More...";
-    ListOfForums.add(MyGroup);
 
-    // I got the category manually by executing:
-       // var ListOfForums = document.getElementsByClassName("tag");
-       // for(var i = 0; i < ListOfForums.length; i++){MyAll = MyAll + (ListOfForums[i].href.toString().replace('https://docs.microsoft.com/answers/topics/','\"').replace('.html','\",'))}
-    ListOfForumsArray = ["azure-active-directory","azure-ad-app-development","azure-ad-app-management","azure-ad-audit-logs","azure-ad-authentication-protocols","azure-ad-b2c","azure-ad-connect","azure-ad-device-management","azure-ad-fs","azure-ad-group-management","azure-ad-identity-governance","azure-ad-licensing","azure-ad-multi-factor-authentication","azure-ad-password-protection","azure-ad-privileged-identity-management","azure-ad-sign-in-logs","azure-ad-sspr","azure-ad-user-management","azure-analysis-services","azure-api-fhir","azure-app-configuration","azure-arc","azure-automation","azure-backup","azure-batch","azure-bing-custom","azure-bing-image","azure-bing-spellcheck","azure-bing-visual","azure-blob-storage","azure-blockchain-workbench","azure-bot-service","azure-cdn","azure-cloud-services","azure-cognitive-services","azure-container-instances","azure-content-moderator","azure-cost-management","azure-cyclecloud","azure-database-migration","azure-database-postgresql","azure-databricks","azure-data-explorer","azure-data-lake-analytics","azure-data-science-vm","azure-ddos-protection","azure-dedicated-hsm","azure-dev-tool-integrations","azure-disk-encryption","azure-dns","azure-ad-access-reviews","azure-ad-app-registration","azure-ad-b2b","azure-ad-connect-health","azure-ad-graph","azure-ad-libraries","azure-ad-pass-through-authentication","azure-ad-rbac","azure-ad-tenant","azure-anomaly-detector","azure-application-gateway","azure-avere-vfxt","azure-bing-autosuggest","azure-bing-news","azure-bing-web","azure-blueprints","azure-classroom-labs","azure-computer-vision","azure-cosmos-db","azure-database-mariadb","azure-data-box-family","azure-data-factory","azure-data-share","azure-devtestlabs","azure-disk-storage","azure-ad-application-proxy","azure-ad-conditional-access","azure-ad-hybrid-identity","azure-ad-powershell","azure-ad-user-provisioning","azure-archive-storage","azure-bing-entity","azure-blockchain-service","azure-cognitive-search","azure-custom-vision","azure-data-catalog","azure-dedicated-host","adfs","azure-ad-domain-services","azure-ad-single-sign-on","azure-bastion","azure-cache-redis","azure-database-mysql","azure-digital-twins","azure-ad-microsoft-account","azure-bing-video","azure-data-lake-storage","azure-api-management","azure-ad-authentication","azure-container-registry"];
-    for(i = 0; i < ListOfForumsArray.length; i++) {
-        let NewOption = document.createElement("option");
-        NewOption.text = ListOfForumsArray[i];
-        NewOption.value = ListOfForumsArray[i];
-        ListOfForums.add(NewOption);
-    }
 
     //document.getElementById("RonenArielyDiv").append(ListOfForums);
     document.getElementById("Page_Structure").after(ListOfForums);
