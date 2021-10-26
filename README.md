@@ -2,7 +2,7 @@
 
 **Extenuations and bugs fixed for Microsoft QnA forums**
 
-This project includes some scripts to improve the uss of Micrsooft new forums Qna
+This project includes some scripts to improve the use of Micrsooft new forums Qna (based on AnswerHub)
 
 ## How to use RonenArielyQaN scripts?
 
