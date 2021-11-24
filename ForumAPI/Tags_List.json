@@ -1,0 +1,15 @@
+[
+  {
+    "azure-ai-machine-learning": [
+      "azure-anomaly-detector",
+      "azure-bing-autosuggest"
+    ]
+  },
+  {
+    "azure-analytics": [
+      "azure-analysis-services",
+      "azure-databricks",
+      "azure-data-catalog"
+    ]
+  }
+]
